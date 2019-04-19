@@ -34,7 +34,7 @@ gradlePlugin {
 }
 
 pluginBundle {
-    website = "http://www.gradle.org/"
+    website = "https://github.com/adik993/jooq-plugin"
     vcsUrl = "https://github.com/adik993/jooq-plugin"
 
     description = "Generates jOOQ classes using dockerized database"
