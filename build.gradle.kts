@@ -58,7 +58,7 @@ tasks {
 
     jacocoTestReport {
         reports {
-            xml.isEnabled = false
+            xml.isEnabled = true
             html.isEnabled = false
         }
         setDependsOn(withType<Test>())
