@@ -1,5 +1,8 @@
 # Gradle Docker jOOQ Plugin
 
+[![Build Status](https://travis-ci.org/revolut-engineering/jooq-plugin.svg?branch=master)](https://travis-ci.org/revolut-engineering/jooq-plugin)
+[![codecov](https://codecov.io/gh/revolut-engineering/jooq-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/revolut-engineering/jooq-plugin)
+
 This repository contains Gradle plugin for generating jOOQ classes in dockerized databases.
 Plugin registers task `generateJooqClasses` that does following steps:
  * pulls docker image
