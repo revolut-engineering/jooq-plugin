@@ -1,16 +1,21 @@
+import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel.CURRENT
+import org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
+
 plugins {
     `kotlin-dsl`
+    groovy
+    jacoco
+    `maven-publish`
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "0.10.1"
-    groovy
     id("com.gradle.build-scan") version "2.2.1"
-    jacoco
     id("pl.droidsonroids.jacoco.testkit") version "1.0.3"
-    `maven-publish`
+    id("com.github.ben-manes.versions").version("0.21.0")
 }
 
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 buildScan {
@@ -62,6 +67,27 @@ tasks {
             html.isEnabled = false
         }
         setDependsOn(withType<Test>())
+    }
+
+    dependencyUpdates {
+        resolutionStrategy {
+            componentSelection {
+                all {
+                    val rejected = listOf("alpha", "beta", "b", "rc", "cr", "m", "preview")
+                            .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]?.*") }
+                            .any { it.matches(candidate.version) }
+                    if (rejected) {
+                        reject("Release candidate")
+                    }
+                }
+            }
+        }
+        gradleReleaseChannel = CURRENT.id
+    }
+
+    wrapper {
+        gradleVersion = "5.4"
+        distributionType = ALL
     }
 }
 
