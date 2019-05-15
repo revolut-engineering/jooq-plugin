@@ -8,7 +8,7 @@ plugins {
     `maven-publish`
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "0.10.1"
-    id("com.gradle.build-scan") version "2.2.1"
+    id("com.gradle.build-scan") version "2.3"
     id("pl.droidsonroids.jacoco.testkit") version "1.0.3"
     id("com.github.ben-manes.versions").version("0.21.0")
 }
@@ -48,7 +48,7 @@ pluginBundle {
         "jooqDockerPlugin" {
             displayName = "jOOQ Docker Plugin"
             tags = listOf("jooq", "docker", "db")
-            version = "0.0.1"
+            version = project.version.toString()
         }
     }
 }
@@ -86,7 +86,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "5.4"
+        gradleVersion = "5.4.1"
         distributionType = ALL
     }
 }
