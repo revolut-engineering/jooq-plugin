@@ -2,9 +2,9 @@ package com.revolut.jooq
 
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.Location.FILESYSTEM_PREFIX
-import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
+import org.gradle.kotlin.dsl.property
 import org.jooq.codegen.GenerationTool
 import org.jooq.codegen.JavaGenerator
 import org.jooq.meta.jaxb.*
@@ -14,12 +14,12 @@ import java.net.URL
 import java.net.URLClassLoader
 
 open class GenerateJooqClassesTask : DefaultTask() {
-    private lateinit var generatorConfig: Generator
-
     @Input
     var schemas = arrayOf("public")
     @Input
     var basePackageName = "org.jooq.generated"
+    @Input
+    val generatorCustomizer = project.objects.property(GeneratorCustomizer::class).convention(GeneratorCustomizer { })
 
     @InputFiles
     val inputDirectory = project.objects.fileCollection().from("src/main/resources/db/migration")
@@ -38,18 +38,6 @@ open class GenerateJooqClassesTask : DefaultTask() {
 
     init {
         project.afterEvaluate {
-            generatorConfig = Generator()
-                    .withName(JavaGenerator::class.qualifiedName)
-                    .withDatabase(Database()
-                            .withName(getJdbc().jooqMetaName)
-                            .withSchemata(schemas.map { Schema().withInputSchema(it) })
-                            .withSchemaVersionProvider(FlywaySchemaVersionProvider::class.qualifiedName)
-                            .withIncludes(".*")
-                            .withExcludes(""))
-                    .withTarget(Target()
-                            .withPackageName(basePackageName)
-                            .withDirectory(outputDirectory.asFile.get().toString())
-                            .withClean(true))
             val sourceSets = project.properties["sourceSets"] as SourceSetContainer
             sourceSets.getByName("main").java.srcDir(outputDirectory.get())
         }
@@ -59,10 +47,8 @@ open class GenerateJooqClassesTask : DefaultTask() {
 
 
     @Suppress("unused")
-    fun customizeGenerator(customizer: Action<Generator>) {
-        doFirst {
-            customizer.execute(generatorConfig)
-        }
+    fun customizeGenerator(customizer: GeneratorCustomizer) {
+        generatorCustomizer.set(customizer)
     }
 
     @TaskAction
@@ -107,7 +93,24 @@ open class GenerateJooqClassesTask : DefaultTask() {
                         .withUrl(db.getUrl())
                         .withUser(db.username)
                         .withPassword(db.password))
-                .withGenerator(generatorConfig))
+                .withGenerator(prepareGeneratorConfig()))
+    }
+
+    private fun prepareGeneratorConfig(): Generator {
+        val generatorConfig = Generator()
+                .withName(JavaGenerator::class.qualifiedName)
+                .withDatabase(Database()
+                        .withName(getJdbc().jooqMetaName)
+                        .withSchemata(schemas.map { Schema().withInputSchema(it) })
+                        .withSchemaVersionProvider(FlywaySchemaVersionProvider::class.qualifiedName)
+                        .withIncludes(".*")
+                        .withExcludes(""))
+                .withTarget(Target()
+                        .withPackageName(basePackageName)
+                        .withDirectory(outputDirectory.asFile.get().toString())
+                        .withClean(true))
+        generatorCustomizer.get().execute(generatorConfig)
+        return generatorConfig
     }
 
     private fun buildJdbcArtifactsAwareClassLoader(): ClassLoader {

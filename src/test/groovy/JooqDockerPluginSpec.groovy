@@ -293,10 +293,95 @@ class JooqDockerPluginSpec extends Specification {
                 .withPluginClasspath()
                 .withArguments("generateJooqClasses")
                 .build()
+        def finalRunNoChanges = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
 
         then:
         initialResult.task(":generateJooqClasses").outcome == SUCCESS
         resultAfterChangeToExtension.task(":generateJooqClasses").outcome == SUCCESS
+        finalRunNoChanges.task(":generateJooqClasses").outcome == UP_TO_DATE
+    }
+
+    def "up to date check works for generator customizations"() {
+        given:
+        def initialBuildGradle =
+                """
+                plugins {
+                    id("com.revolut.jooq-docker")
+                }
+                
+                repositories {
+                    jcenter()
+                }
+                
+                tasks {
+                    generateJooqClasses {
+                        schemas = arrayOf("public", "other")
+                        customizeGenerator {
+                            this.database.withExcludes("BAR")
+                        }
+                    }
+                }
+                
+                dependencies {
+                    "jdbc"("org.postgresql:postgresql:42.2.5")
+                }
+                """
+        def updatedBuildGradle =
+                """
+                plugins {
+                    id("com.revolut.jooq-docker")
+                }
+                
+                repositories {
+                    jcenter()
+                }
+                
+                tasks {
+                    generateJooqClasses {
+                        schemas = arrayOf("public", "other")
+                        customizeGenerator {
+                            this.database.withExcludes(".*")
+                        }
+                    }
+                }
+                
+                dependencies {
+                    "jdbc"("org.postgresql:postgresql:42.2.5")
+                }
+                """
+        copyResource("/V01__init_multiple_schemas.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_multiple_schemas.sql"))
+        prepareBuildGradleFile(projectDir, initialBuildGradle)
+
+        when:
+        def initialRun = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+        prepareBuildGradleFile(projectDir, updatedBuildGradle)
+        def runAfterUpdate = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+        def finalRunNoChanges = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        initialRun.task(":generateJooqClasses").outcome == SUCCESS
+        runAfterUpdate.task(":generateJooqClasses").outcome == SUCCESS
+        finalRunNoChanges.task(":generateJooqClasses").outcome == UP_TO_DATE
+        def generatedPublic = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/public_/tables/Foo.java")
+        def generatedOther = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/other/tables/Bar.java")
+        !Files.exists(generatedPublic)
+        !Files.exists(generatedOther)
     }
 
     def "generates jooq classes in a given package"() {
