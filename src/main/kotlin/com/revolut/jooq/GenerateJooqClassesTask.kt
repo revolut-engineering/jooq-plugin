@@ -5,10 +5,10 @@ import org.flywaydb.core.api.Location.FILESYSTEM_PREFIX
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.property
-import org.jooq.codegen.GenerationTool
-import org.jooq.codegen.JavaGenerator
-import org.jooq.meta.jaxb.*
-import org.jooq.meta.jaxb.Target
+import org.jooq.util.GenerationTool
+import org.jooq.util.JavaGenerator
+import org.jooq.util.jaxb.*
+import org.jooq.util.jaxb.Target
 import java.io.IOException
 import java.net.URL
 import java.net.URLClassLoader
@@ -107,8 +107,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
                         .withExcludes(""))
                 .withTarget(Target()
                         .withPackageName(basePackageName)
-                        .withDirectory(outputDirectory.asFile.get().toString())
-                        .withClean(true))
+                        .withDirectory(outputDirectory.asFile.get().toString()))
         generatorCustomizer.get().execute(generatorConfig)
         return generatorConfig
     }

@@ -28,7 +28,7 @@ kotlinDslPluginOptions {
 }
 
 group = "com.revolut.jooq"
-version = "0.2.0"
+version = "0.1.0"
 
 gradlePlugin {
     plugins.create("jooqDockerPlugin") {
@@ -93,7 +93,7 @@ tasks {
 
 
 dependencies {
-    implementation("org.jooq:jooq-codegen:3.11.11")
+    implementation("org.jooq:jooq-codegen:3.10.8")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2")
     implementation("com.github.docker-java:docker-java:3.1.2")
     implementation("org.flywaydb:flyway-core:5.2.4")

@@ -456,7 +456,7 @@ class JooqDockerPluginSpec extends Specification {
                           jdbc {
                               schema = "jdbc:mysql"
                               driverClassName = "com.mysql.cj.jdbc.Driver"
-                              jooqMetaName = "org.jooq.meta.mysql.MySQLDatabase"
+                              jooqMetaName = "org.jooq.util.mysql.MySQLDatabase"
                               urlQueryParams = "?useSSL=false"
                           }
                       }

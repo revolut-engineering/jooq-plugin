@@ -10,6 +10,8 @@ Plugin registers task `generateJooqClasses` that does following steps:
  * runs migrations using Flyway
  * generates jOOQ classes
 
+**Use `0.1.x` release for jOOQ versions `3.10.8` and earlier**
+
 # Examples
 
 By default plugin is configured to work with PostgreSQL, so the following minimal config is enough:
@@ -23,7 +25,7 @@ repositories {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.11")
+  implementation("org.jooq:jooq:3.10.8")
   "jdbc"("org.postgresql:postgresql:42.2.5")
 }
 ```
@@ -54,7 +56,7 @@ tasks {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.11")
+  implementation("org.jooq:jooq:3.10.8")
   "jdbc"("org.postgresql:postgresql:42.2.5")
 }
 ```
@@ -92,13 +94,13 @@ jooq {
   jdbc {
       schema = "jdbc:mysql"
       driverClassName = "com.mysql.cj.jdbc.Driver"
-      jooqMetaName = "org.jooq.meta.mysql.MySQLDatabase"
+      jooqMetaName = "org.jooq.util.mysql.MySQLDatabase"
       urlQueryParams = "?useSSL=false"
   }
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.11")
+  implementation("org.jooq:jooq:3.10.8")
   "jdbc"("mysql:mysql-connector-java:8.0.15")
 }
 ```
@@ -127,7 +129,7 @@ tasks {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.11")
+  implementation("org.jooq:jooq:3.10.8")
   "jdbc"("org.postgresql:postgresql:42.2.5")
 }
 ```
@@ -144,7 +146,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jooq:jooq-codegen:3.11.10") {
+    classpath("org.jooq:jooq-codegen:3.9.6") {
       isForce = true
     }
   }
@@ -155,7 +157,7 @@ repositories {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.10")
+  implementation("org.jooq:jooq:3.9.6")
   "jdbc"("org.postgresql:postgresql:42.2.5")
 }
 ```
