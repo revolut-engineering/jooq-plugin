@@ -10,6 +10,8 @@ Plugin registers task `generateJooqClasses` that does following steps:
  * runs migrations using Flyway
  * generates jOOQ classes
 
+**Use `0.2.x` and later releases for jOOQ versions `3.11.x` and later. For earlier versions use `0.1.x` release**
+
 # Examples
 
 By default plugin is configured to work with PostgreSQL, so the following minimal config is enough:
