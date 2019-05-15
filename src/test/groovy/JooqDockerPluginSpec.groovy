@@ -236,6 +236,69 @@ class JooqDockerPluginSpec extends Specification {
         runAfterDeletion.task(":generateJooqClasses").outcome == SUCCESS
     }
 
+    def "up to date check works for extension changes"() {
+        given:
+        def initialBuildGradle =
+                """
+                plugins {
+                    id("com.revolut.jooq-docker")
+                }
+                
+                jooq {
+                    image {
+                        tag = "11.2-alpine"
+                    }
+                }
+                
+                repositories {
+                    jcenter()
+                }
+                
+                dependencies {
+                    "jdbc"("org.postgresql:postgresql:42.2.5")
+                }
+                """
+        def extensionUpdatedBuildGradle =
+                """
+                plugins {
+                    id("com.revolut.jooq-docker")
+                }
+                
+                jooq {
+                    image {
+                        tag = "11.3-alpine"
+                    }
+                }
+                
+                repositories {
+                    jcenter()
+                }
+                
+                dependencies {
+                    "jdbc"("org.postgresql:postgresql:42.2.5")
+                }
+                """
+        prepareBuildGradleFile(projectDir, initialBuildGradle)
+        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+
+        when:
+        def initialResult = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+        prepareBuildGradleFile(projectDir, extensionUpdatedBuildGradle)
+        def resultAfterChangeToExtension = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        initialResult.task(":generateJooqClasses").outcome == SUCCESS
+        resultAfterChangeToExtension.task(":generateJooqClasses").outcome == SUCCESS
+    }
+
     def "generates jooq classes in a given package"() {
         given:
         prepareBuildGradleFile(projectDir,

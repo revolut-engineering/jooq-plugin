@@ -12,7 +12,9 @@ open class JooqDockerPlugin : Plugin<Project> {
         project.extensions.create("jooq", JooqExtension::class.java)
         project.configurations.create("jdbc")
         project.tasks.apply {
-            val generateJooqClasses = create("generateJooqClasses", GenerateJooqClassesTask::class.java)
+            val generateJooqClasses = create("generateJooqClasses", GenerateJooqClassesTask::class.java) {
+                group = "jooq"
+            }
             withType(JavaCompile::class.java) {
                 dependsOn(generateJooqClasses)
             }

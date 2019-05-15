@@ -14,27 +14,34 @@ import java.net.URL
 import java.net.URLClassLoader
 
 open class GenerateJooqClassesTask : DefaultTask() {
-    private lateinit var jdbcAwareClassLoader: ClassLoader
-    private lateinit var extension: JooqExtension
     private lateinit var generatorConfig: Generator
 
     @Input
     var schemas = arrayOf("public")
     @Input
     var basePackageName = "org.jooq.generated"
+
     @InputFiles
     val inputDirectory = project.objects.fileCollection().from("src/main/resources/db/migration")
     @OutputDirectory
     val outputDirectory = project.objects.directoryProperty().convention(project.layout.buildDirectory.dir("generated-jooq"))
 
+    @Input
+    fun getDb() = getExtension().db
+
+    @Input
+    fun getJdbc() = getExtension().jdbc
+
+    @Input
+    fun getImage() = getExtension().image
+
+
     init {
-        group = "jooq"
         project.afterEvaluate {
-            extension = project.extensions.getByName("jooq") as JooqExtension
             generatorConfig = Generator()
                     .withName(JavaGenerator::class.qualifiedName)
                     .withDatabase(Database()
-                            .withName(extension.jdbc.jooqMetaName)
+                            .withName(getJdbc().jooqMetaName)
                             .withSchemata(schemas.map { Schema().withInputSchema(it) })
                             .withSchemaVersionProvider(FlywaySchemaVersionProvider::class.qualifiedName)
                             .withIncludes(".*")
@@ -45,9 +52,11 @@ open class GenerateJooqClassesTask : DefaultTask() {
                             .withClean(true))
             val sourceSets = project.properties["sourceSets"] as SourceSetContainer
             sourceSets.getByName("main").java.srcDir(outputDirectory.get())
-            jdbcAwareClassLoader = buildJdbcArtifactsAwareClassLoader()
         }
     }
+
+    private fun getExtension() = project.extensions.getByName("jooq") as JooqExtension
+
 
     @Suppress("unused")
     fun customizeGenerator(customizer: Action<Generator>) {
@@ -58,40 +67,46 @@ open class GenerateJooqClassesTask : DefaultTask() {
 
     @TaskAction
     fun generateClasses() {
+        val image = getImage()
+        val db = getDb()
+        val jdbcAwareClassLoader = buildJdbcArtifactsAwareClassLoader()
         val docker = Docker(
-                extension.image.getImageName(),
-                extension.image.envVars,
-                extension.db.port to extension.image.exposedPort,
-                extension.image.getRedinessCommand(),
-                extension.image.containerName)
+                image.getImageName(),
+                image.envVars,
+                db.port to db.exposedPort,
+                image.getReadinessCommand(),
+                image.containerName)
         docker.use {
             it.runInContainer {
-                migrateDb()
-                generateJooqClasses()
+                migrateDb(jdbcAwareClassLoader)
+                generateJooqClasses(jdbcAwareClassLoader)
             }
         }
     }
 
-    private fun migrateDb() {
+    private fun migrateDb(jdbcAwareClassLoader: ClassLoader) {
+        val db = getDb()
         Flyway.configure(jdbcAwareClassLoader)
-                .dataSource(extension.db.getUrl(), extension.db.username, extension.db.password)
+                .dataSource(db.getUrl(), db.username, db.password)
                 .schemas(*schemas)
                 .locations(*inputDirectory.map { "$FILESYSTEM_PREFIX${it.absolutePath}" }.toTypedArray())
                 .load()
                 .migrate()
     }
 
-    private fun generateJooqClasses() {
+    private fun generateJooqClasses(jdbcAwareClassLoader: ClassLoader) {
+        val db = getDb()
+        val jdbc = getJdbc()
         FlywaySchemaVersionProvider.primarySchema = schemas.first()
         val tool = GenerationTool()
         tool.setClassLoader(jdbcAwareClassLoader)
         tool.run(Configuration()
                 .withLogging(Logging.DEBUG)
                 .withJdbc(Jdbc()
-                        .withDriver(extension.jdbc.driverClassName)
-                        .withUrl(extension.db.getUrl())
-                        .withUser(extension.db.username)
-                        .withPassword(extension.db.password))
+                        .withDriver(jdbc.driverClassName)
+                        .withUrl(db.getUrl())
+                        .withUser(db.username)
+                        .withPassword(db.password))
                 .withGenerator(generatorConfig))
     }
 
