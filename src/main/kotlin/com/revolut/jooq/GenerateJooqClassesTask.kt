@@ -26,14 +26,50 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @OutputDirectory
     val outputDirectory = project.objects.directoryProperty().convention(project.layout.buildDirectory.dir("generated-jooq"))
 
-    @Input
+    @Internal
     fun getDb() = getExtension().db
 
-    @Input
+    @Internal
     fun getJdbc() = getExtension().jdbc
 
-    @Input
+    @Internal
     fun getImage() = getExtension().image
+
+    @Input
+    fun getJdbcSchema() = getJdbc().schema
+
+    @Input
+    fun getJdbcDriverClassName() = getJdbc().driverClassName
+
+    @Input
+    fun getJooqMetaName() = getJdbc().jooqMetaName
+
+    @Input
+    fun getJdbcUrlQueryParams() = getJdbc().urlQueryParams
+
+    @Input
+    fun getDbUsername() = getDb().username
+
+    @Input
+    fun getDbPassword() = getDb().password
+
+    @Input
+    fun getDbPort() = getDb().port
+
+    @Input
+    fun getImageRepository() = getImage().repository
+
+    @Input
+    fun getImageTag() = getImage().tag
+
+    @Input
+    fun getImageEnvVars() = getImage().envVars
+
+    @Input
+    fun getContainerName() = getImage().containerName
+
+    @Input
+    fun getReadinessCommand() = getImage().getReadinessCommand()
 
 
     init {

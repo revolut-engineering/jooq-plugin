@@ -38,7 +38,6 @@ open class JooqExtension : Serializable {
         var password = "postgres"
         var name = "postgres"
         var port = 5432
-        @Transient
         var exposedPort = lookupFreePort()
 
         internal fun getUrl(): String {
