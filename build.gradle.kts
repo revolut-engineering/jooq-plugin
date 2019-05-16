@@ -27,6 +27,11 @@ kotlinDslPluginOptions {
     experimentalWarning.set(false)
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 group = "com.revolut.jooq"
 version = "0.1.0"
 
