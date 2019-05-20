@@ -19,6 +19,8 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     var basePackageName = "org.jooq.generated"
     @Input
+    var flywayProperties = emptyMap<String, String>()
+    @Input
     val generatorCustomizer = project.objects.property(GeneratorCustomizer::class).convention(GeneratorCustomizer { })
 
     @InputFiles
@@ -112,6 +114,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
                 .dataSource(db.getUrl(), db.username, db.password)
                 .schemas(*schemas)
                 .locations(*inputDirectory.map { "$FILESYSTEM_PREFIX${it.absolutePath}" }.toTypedArray())
+                .configuration(flywayProperties)
                 .load()
                 .migrate()
     }
