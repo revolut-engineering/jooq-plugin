@@ -480,6 +480,81 @@ class JooqDockerPluginSpec extends Specification {
         Files.exists(generatedClass)
     }
 
+    def "flyway configuration overridden with flywayProperties task input"() {
+        given:
+        prepareBuildGradleFile(projectDir,
+                """
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              flywayProperties = mapOf("flyway.placeholderReplacement" to "false")
+                          }
+                      }
+                      
+                      dependencies {
+                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init_with_placeholders.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_with_placeholders.sql"))
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        Files.exists(generatedClass)
+    }
+
+    def "plugin works in Groovy gradle file"() {
+        given:
+        def buildGradleFile = new File(projectDir, "build.gradle")
+        buildGradleFile.write(
+                """
+                      plugins {
+                          id "com.revolut.jooq-docker"
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              flywayProperties = ["flyway.placeholderReplacement": "false"]
+                          }
+                      }
+                      
+                      dependencies {
+                          jdbc "org.postgresql:postgresql:42.2.5"
+                      }
+                      """)
+        copyResource("/V01__init_with_placeholders.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_with_placeholders.sql"))
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        Files.exists(generatedClass)
+    }
+
     private static void prepareBuildGradleFile(File dir, String script) {
         def buildGradleFile = new File(dir, "build.gradle.kts")
         buildGradleFile.write(script)
