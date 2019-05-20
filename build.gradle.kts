@@ -33,7 +33,7 @@ java {
 }
 
 group = "com.revolut.jooq"
-version = "0.1.1"
+version = "0.1.2"
 
 gradlePlugin {
     plugins.create("jooqDockerPlugin") {
