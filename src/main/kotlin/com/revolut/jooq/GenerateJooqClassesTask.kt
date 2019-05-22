@@ -23,6 +23,8 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     var outputSchemaToDefault = emptySet<String>()
     @Input
+    var schemaToPackageMapping = emptyMap<String, String>()
+    @Input
     val generatorCustomizer = project.objects.property(GeneratorCustomizer::class).convention(GeneratorCustomizer { })
 
     @InputFiles
@@ -138,8 +140,11 @@ open class GenerateJooqClassesTask : DefaultTask() {
     }
 
     private fun prepareGeneratorConfig(): Generator {
+        SchemaPackageRenameGeneratorStrategy.schemaToPackageMapping = schemaToPackageMapping.toMap()
         val generatorConfig = Generator()
                 .withName(JavaGenerator::class.qualifiedName)
+                .withStrategy(Strategy()
+                        .withName(SchemaPackageRenameGeneratorStrategy::class.qualifiedName))
                 .withDatabase(Database()
                         .withName(getJdbc().jooqMetaName)
                         .withSchemata(schemas.map(this::toSchema))

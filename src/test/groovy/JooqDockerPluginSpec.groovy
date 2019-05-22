@@ -110,6 +110,46 @@ class JooqDockerPluginSpec extends Specification {
         Files.exists(generatedOther)
     }
 
+    def "generates jooq classes for PostgreSQL db with default config for multiple schemas and renames package"() {
+        given:
+        prepareBuildGradleFile(projectDir,
+                """
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              schemas = arrayOf("public", "other")
+                              schemaToPackageMapping = mapOf("public" to "fancy_name")
+                          }
+                      }
+                      
+                      dependencies {
+                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init_multiple_schemas.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_multiple_schemas.sql"))
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedPublic = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/fancy_name/tables/Foo.java")
+        def generatedOther = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/other/tables/Bar.java")
+        Files.exists(generatedPublic)
+        Files.exists(generatedOther)
+    }
+
     def "respects the generator customizations"() {
         given:
         prepareBuildGradleFile(projectDir,
