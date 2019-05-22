@@ -21,6 +21,8 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     var flywayProperties = emptyMap<String, String>()
     @Input
+    var outputSchemaToDefault = emptySet<String>()
+    @Input
     val generatorCustomizer = project.objects.property(GeneratorCustomizer::class).convention(GeneratorCustomizer { })
 
     @InputFiles
@@ -140,7 +142,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
                 .withName(JavaGenerator::class.qualifiedName)
                 .withDatabase(Database()
                         .withName(getJdbc().jooqMetaName)
-                        .withSchemata(schemas.map { Schema().withInputSchema(it) })
+                        .withSchemata(schemas.map(this::toSchema))
                         .withSchemaVersionProvider(FlywaySchemaVersionProvider::class.qualifiedName)
                         .withIncludes(".*")
                         .withExcludes(""))
@@ -150,6 +152,12 @@ open class GenerateJooqClassesTask : DefaultTask() {
                         .withClean(true))
         generatorCustomizer.get().execute(generatorConfig)
         return generatorConfig
+    }
+
+    private fun toSchema(schemaName: String): Schema {
+        return Schema()
+                .withInputSchema(schemaName)
+                .withOutputSchemaToDefault(outputSchemaToDefault.contains(schemaName))
     }
 
     private fun buildJdbcArtifactsAwareClassLoader(): ClassLoader {
