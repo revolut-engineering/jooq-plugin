@@ -555,6 +555,45 @@ class JooqDockerPluginSpec extends Specification {
         Files.exists(generatedClass)
     }
 
+    def "output schema to default properly passed to jOOQ generator"() {
+        given:
+        prepareBuildGradleFile(projectDir,
+                """
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              outputSchemaToDefault = setOf("public")
+                          }
+                      }
+                      
+                      dependencies {
+                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedTableClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def generatedSchemaClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/DefaultSchema.java")
+        Files.exists(generatedTableClass)
+        Files.exists(generatedSchemaClass)
+    }
+
     private static void prepareBuildGradleFile(File dir, String script) {
         def buildGradleFile = new File(dir, "build.gradle.kts")
         buildGradleFile.write(script)
