@@ -51,6 +51,8 @@ tasks {
     inputDirectory.setFrom(project.files("src/main/resources/db/migration"))
     outputDirectory.set(project.layout.buildDirectory.dir("generated-jooq"))
     flywayProperties = mapOf("flyway.placeholderReplacement" to "false")
+    outputSchemaToDefault = setOf("public")
+    schemaToPackageMapping = mapOf("public" to "fancy_name")
     customizeGenerator {
       /* "this" here is the org.jooq.meta.jaxb.Generator configure it as you please */
     }
