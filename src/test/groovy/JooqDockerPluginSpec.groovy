@@ -71,6 +71,46 @@ class JooqDockerPluginSpec extends Specification {
         Files.exists(generatedClass)
     }
 
+    def "generates jooq classes for PostgreSQL db with provided flyway schema"() {
+        given:
+        prepareBuildGradleFile(projectDir,
+                """
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              schemas = arrayOf("other")
+                              flywaySchema = "flyway"
+                          }
+                      }
+                      
+                      dependencies {
+                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init_flyway_schema.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_flyway_schema.sql"))
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def generatedFlywaySchemaHistoryClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/FlywaySchemaHistory.java")
+        Files.exists(generatedClass)
+        Files.notExists(generatedFlywaySchemaHistoryClass)
+    }
+
     def "generates jooq classes for PostgreSQL db with default config for multiple schemas"() {
         given:
         prepareBuildGradleFile(projectDir,

@@ -16,6 +16,8 @@ import java.net.URLClassLoader
 open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     var schemas = arrayOf("public")
+    @Input @Optional
+    var flywaySchema: String? = null
     @Input
     var basePackageName = "org.jooq.generated"
     @Input
@@ -116,7 +118,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
         val db = getDb()
         Flyway.configure(jdbcAwareClassLoader)
                 .dataSource(db.getUrl(), db.username, db.password)
-                .schemas(*schemas)
+                .schemas(*listOfNotNull(flywaySchema, *schemas).toTypedArray())
                 .locations(*inputDirectory.map { "$FILESYSTEM_PREFIX${it.absolutePath}" }.toTypedArray())
                 .configuration(flywayProperties)
                 .load()
@@ -126,7 +128,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
     private fun generateJooqClasses(jdbcAwareClassLoader: ClassLoader) {
         val db = getDb()
         val jdbc = getJdbc()
-        FlywaySchemaVersionProvider.primarySchema = schemas.first()
+        FlywaySchemaVersionProvider.primarySchema = flywaySchema ?: schemas.first()
         val tool = GenerationTool()
         tool.setClassLoader(jdbcAwareClassLoader)
         tool.run(Configuration()
