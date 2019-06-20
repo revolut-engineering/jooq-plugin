@@ -6,4 +6,7 @@ import org.jooq.util.jaxb.Generator;
 import java.io.Serializable;
 
 public interface GeneratorCustomizer extends Action<Generator>, Serializable {
+
+    GeneratorCustomizer NOOP = generator -> {
+    };
 }

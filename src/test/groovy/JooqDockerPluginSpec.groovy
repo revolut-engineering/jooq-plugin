@@ -166,7 +166,7 @@ class JooqDockerPluginSpec extends Specification {
                           generateJooqClasses {
                               schemas = arrayOf("public", "other")
                               customizeGenerator {
-                                  this.database.withExcludes("BAR")
+                                  database.withExcludes("BAR")
                               }
                           }
                       }
@@ -361,7 +361,7 @@ class JooqDockerPluginSpec extends Specification {
                     generateJooqClasses {
                         schemas = arrayOf("public", "other")
                         customizeGenerator {
-                            this.database.withExcludes("BAR")
+                            database.withExcludes("BAR")
                         }
                     }
                 }
@@ -384,7 +384,7 @@ class JooqDockerPluginSpec extends Specification {
                     generateJooqClasses {
                         schemas = arrayOf("public", "other")
                         customizeGenerator {
-                            this.database.withExcludes(".*")
+                            database.withExcludes(".*")
                         }
                     }
                 }
@@ -573,6 +573,9 @@ class JooqDockerPluginSpec extends Specification {
                       tasks {
                           generateJooqClasses {
                               flywayProperties = ["flyway.placeholderReplacement": "false"]
+                              customizeGenerator {
+                                  database.withExcludes("BAR")
+                              }
                           }
                       }
                       
@@ -581,18 +584,21 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       """)
         copyResource("/V01__init_with_placeholders.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_with_placeholders.sql"))
+        copyResource("/V02__add_bar.sql", new File(projectDir, "src/main/resources/db/migration/V02__add_bar.sql"))
 
         when:
         def result = GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
-                .withArguments("generateJooqClasses")
+                .withArguments("generateJooqClasses", "--stacktrace")
                 .build()
 
         then:
         result.task(":generateJooqClasses").outcome == SUCCESS
-        def generatedClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
-        Files.exists(generatedClass)
+        def generatedFoo = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def generatedBar = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Bar.java")
+        Files.exists(generatedFoo)
+        !Files.exists(generatedBar)
     }
 
     def "output schema to default properly passed to jOOQ generator"() {

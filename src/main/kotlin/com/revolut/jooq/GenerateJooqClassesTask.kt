@@ -1,5 +1,7 @@
 package com.revolut.jooq
 
+import com.revolut.jooq.GeneratorCustomizer.NOOP
+import groovy.lang.Closure
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.Location.FILESYSTEM_PREFIX
 import org.gradle.api.DefaultTask
@@ -25,7 +27,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     var schemaToPackageMapping = emptyMap<String, String>()
     @Input
-    val generatorCustomizer = project.objects.property(GeneratorCustomizer::class).convention(GeneratorCustomizer { })
+    val generatorCustomizer = project.objects.property(GeneratorCustomizer::class).convention(NOOP)
 
     @InputFiles
     val inputDirectory = project.objects.fileCollection().from("src/main/resources/db/migration")
@@ -91,6 +93,11 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @Suppress("unused")
     fun customizeGenerator(customizer: GeneratorCustomizer) {
         generatorCustomizer.set(customizer)
+    }
+
+    @Suppress("unused")
+    fun customizeGenerator(closure: Closure<Generator>) {
+        generatorCustomizer.set(ClosureGeneratorCustomizer(closure))
     }
 
     @TaskAction
