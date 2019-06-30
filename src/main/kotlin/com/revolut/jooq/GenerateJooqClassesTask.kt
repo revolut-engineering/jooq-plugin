@@ -27,6 +27,8 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     var schemaToPackageMapping = emptyMap<String, String>()
     @Input
+    var excludeFlywayTable = false
+    @Input
     val generatorCustomizer = project.objects.property(GeneratorCustomizer::class).convention(NOOP)
 
     @InputFiles
@@ -163,6 +165,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
                         .withDirectory(outputDirectory.asFile.get().toString())
                         .withClean(true))
         generatorCustomizer.get().execute(generatorConfig)
+        excludeFlywaySchemaIfNeeded(generatorConfig)
         return generatorConfig
     }
 
@@ -170,6 +173,17 @@ open class GenerateJooqClassesTask : DefaultTask() {
         return Schema()
                 .withInputSchema(schemaName)
                 .withOutputSchemaToDefault(outputSchemaToDefault.contains(schemaName))
+    }
+
+    private fun excludeFlywaySchemaIfNeeded(generator: Generator) {
+        if (excludeFlywayTable)
+            generator.database.withExcludes(addFlywaySchemaHistoryToExcludes(generator.database.excludes))
+    }
+
+    private fun addFlywaySchemaHistoryToExcludes(currentExcludes: String?): String {
+        return listOf(currentExcludes, "flyway_schema_history")
+                .filterNot(String?::isNullOrEmpty)
+                .joinToString("|")
     }
 
     private fun buildJdbcArtifactsAwareClassLoader(): ClassLoader {

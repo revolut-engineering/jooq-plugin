@@ -67,8 +67,10 @@ class JooqDockerPluginSpec extends Specification {
 
         then:
         result.task(":generateJooqClasses").outcome == SUCCESS
-        def generatedClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
-        Files.exists(generatedClass)
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def generatedFlywayClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/FlywaySchemaHistory.java")
+        Files.exists(generatedFooClass)
+        Files.exists(generatedFlywayClass)
     }
 
     def "generates jooq classes for PostgreSQL db with default config for multiple schemas"() {
@@ -106,8 +108,10 @@ class JooqDockerPluginSpec extends Specification {
         result.task(":generateJooqClasses").outcome == SUCCESS
         def generatedPublic = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/public_/tables/Foo.java")
         def generatedOther = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/other/tables/Bar.java")
+        def generatedFlywaySchemaClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/public_/tables/FlywaySchemaHistory.java")
         Files.exists(generatedPublic)
         Files.exists(generatedOther)
+        Files.exists(generatedFlywaySchemaClass)
     }
 
     def "generates jooq classes for PostgreSQL db with default config for multiple schemas and renames package"() {
@@ -638,6 +642,90 @@ class JooqDockerPluginSpec extends Specification {
         def generatedSchemaClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/DefaultSchema.java")
         Files.exists(generatedTableClass)
         Files.exists(generatedSchemaClass)
+    }
+
+    def "exclude flyway schema history"() {
+        given:
+        prepareBuildGradleFile(projectDir,
+                """
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              excludeFlywayTable = true
+                          }
+                      }
+                      
+                      dependencies {
+                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def generatedFlywayClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/FlywaySchemaHistory.java")
+        Files.exists(generatedFooClass)
+        Files.notExists(generatedFlywayClass)
+    }
+
+    def "exclude flyway schema history without overriding existing excludes"() {
+        given:
+        prepareBuildGradleFile(projectDir,
+                """
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              excludeFlywayTable = true
+                              schemas = arrayOf("public", "other")
+                              customizeGenerator {
+                                  database.withExcludes("BAR")
+                              }
+                          }
+                      }
+                      
+                      dependencies {
+                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init_multiple_schemas.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_multiple_schemas.sql"))
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/public_/tables/Foo.java")
+        def generatedBarClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/other/tables/Bar.java")
+        def generatedFlywaySchemaClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/public_/tables/FlywaySchemaHistory.java")
+        Files.exists(generatedFooClass)
+        Files.notExists(generatedBarClass)
+        Files.notExists(generatedFlywaySchemaClass)
     }
 
     private static void prepareBuildGradleFile(File dir, String script) {
