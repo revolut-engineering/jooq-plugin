@@ -50,6 +50,7 @@ tasks {
     inputDirectory.setFrom(project.files("src/main/resources/db/migration"))
     outputDirectory.set(project.layout.buildDirectory.dir("generated-jooq"))
     flywayProperties = mapOf("flyway.placeholderReplacement" to "false")
+    excludeFlywayTable = true
     outputSchemaToDefault = setOf("public")
     schemaToPackageMapping = mapOf("public" to "fancy_name")
     customizeGenerator {
