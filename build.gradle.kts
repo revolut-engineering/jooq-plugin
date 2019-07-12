@@ -9,7 +9,7 @@ plugins {
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "0.10.1"
     id("com.gradle.build-scan") version "2.3"
-    id("pl.droidsonroids.jacoco.testkit") version "1.0.3"
+    id("pl.droidsonroids.jacoco.testkit") version "1.0.4"
     id("com.github.ben-manes.versions").version("0.21.0")
 }
 
@@ -91,7 +91,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "5.4.1"
+        gradleVersion = "5.5.1"
         distributionType = ALL
     }
 }
