@@ -166,3 +166,39 @@ dependencies {
   "jdbc"("org.postgresql:postgresql:42.2.5")
 }
 ```
+
+### Remote docker setup
+
+The library plugin uses to communicate with docker daemon will pick up your environment variables like `DOCKER_HOST` 
+and use them for connection ([all config options here](https://github.com/docker-java/docker-java#configuration)). 
+Plugin then, based on this config, will try to figure out the host on which database is exposed, 
+if it fail you can override it the following way:
+
+```kotlin
+plugins {
+  id("com.revolut.jooq-docker")
+}
+
+
+jooq {
+    db {
+        hostOverride = "localhost"
+    }
+}
+```
+
+For the readiness probe plugin will always use localhost `127.0.0.1` as it's a command run within the database container. 
+If for whatever reason you need to override this you can do that by specifying it as follows:
+
+```kotlin
+ plugins {
+   id("com.revolut.jooq-docker")
+ }
+ 
+ 
+ jooq {
+    image {
+        readinessProbeHost = "someHost"
+    }
+ }
+```
