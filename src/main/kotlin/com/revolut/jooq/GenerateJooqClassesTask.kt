@@ -67,6 +67,10 @@ open class GenerateJooqClassesTask : DefaultTask() {
     fun getDbPort() = getDb().port
 
     @Input
+    @Optional
+    fun getDbHostOverride() = getDb().hostOverride
+
+    @Input
     fun getImageRepository() = getImage().repository
 
     @Input
@@ -77,6 +81,9 @@ open class GenerateJooqClassesTask : DefaultTask() {
 
     @Input
     fun getContainerName() = getImage().containerName
+
+    @Input
+    fun getReadinessProbeHost() = getImage().readinessProbeHost
 
     @Input
     fun getReadinessCommand() = getImage().getReadinessCommand()
@@ -112,19 +119,20 @@ open class GenerateJooqClassesTask : DefaultTask() {
                 image.envVars,
                 db.port to db.exposedPort,
                 image.getReadinessCommand(),
+                DatabaseHostResolver(db.hostOverride),
                 image.containerName)
         docker.use {
             it.runInContainer {
-                migrateDb(jdbcAwareClassLoader)
-                generateJooqClasses(jdbcAwareClassLoader)
+                migrateDb(jdbcAwareClassLoader, this)
+                generateJooqClasses(jdbcAwareClassLoader, this)
             }
         }
     }
 
-    private fun migrateDb(jdbcAwareClassLoader: ClassLoader) {
+    private fun migrateDb(jdbcAwareClassLoader: ClassLoader, dbHost: String) {
         val db = getDb()
         Flyway.configure(jdbcAwareClassLoader)
-                .dataSource(db.getUrl(), db.username, db.password)
+                .dataSource(db.getUrl(dbHost), db.username, db.password)
                 .schemas(*schemas)
                 .locations(*inputDirectory.map { "$FILESYSTEM_PREFIX${it.absolutePath}" }.toTypedArray())
                 .configuration(flywayProperties)
@@ -132,7 +140,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
                 .migrate()
     }
 
-    private fun generateJooqClasses(jdbcAwareClassLoader: ClassLoader) {
+    private fun generateJooqClasses(jdbcAwareClassLoader: ClassLoader, dbHost: String) {
         val db = getDb()
         val jdbc = getJdbc()
         FlywaySchemaVersionProvider.primarySchema = schemas.first()
@@ -142,7 +150,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
                 .withLogging(Logging.DEBUG)
                 .withJdbc(Jdbc()
                         .withDriver(jdbc.driverClassName)
-                        .withUrl(db.getUrl())
+                        .withUrl(db.getUrl(dbHost))
                         .withUser(db.username)
                         .withPassword(db.password))
                 .withGenerator(prepareGeneratorConfig()))

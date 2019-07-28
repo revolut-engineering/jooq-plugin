@@ -5,10 +5,6 @@ import java.io.Serializable
 import java.net.ServerSocket
 
 open class JooqExtension : Serializable {
-    companion object {
-        const val HOST = "127.0.0.1"
-    }
-
     val jdbc = Jdbc()
     val db = Database(jdbc)
     val image = Image(db)
@@ -25,7 +21,6 @@ open class JooqExtension : Serializable {
         configure.execute(jdbc)
     }
 
-
     class Jdbc : Serializable {
         var schema = "jdbc:postgresql"
         var driverClassName = "org.postgresql.Driver"
@@ -37,11 +32,12 @@ open class JooqExtension : Serializable {
         var username = "postgres"
         var password = "postgres"
         var name = "postgres"
+        var hostOverride: String? = null
         var port = 5432
         var exposedPort = lookupFreePort()
 
-        internal fun getUrl(): String {
-            return "${jdbc.schema}://$HOST:$exposedPort/$name${jdbc.urlQueryParams}"
+        internal fun getUrl(host: String): String {
+            return "${jdbc.schema}://$host:$exposedPort/$name${jdbc.urlQueryParams}"
         }
 
         private fun lookupFreePort(): Int {
@@ -49,7 +45,6 @@ open class JooqExtension : Serializable {
                 return it.localPort
             }
         }
-
     }
 
     class Image(private val db: Database) : Serializable {
@@ -57,18 +52,18 @@ open class JooqExtension : Serializable {
         var tag = "11.2-alpine"
         var envVars: Map<String, Any> = mapOf("POSTGRES_USER" to db.username, "POSTGRES_PASSWORD" to db.password, "POSTGRES_DB" to db.name)
         var containerName = "uniqueContainerName"
+        var readinessProbeHost = "127.0.0.1"
         var readinessProbe = { host: String, port: Int ->
             arrayOf("sh", "-c", "until pg_isready -h $host -p $port; do echo waiting for db; sleep 1; done;")
         }
 
         internal fun getReadinessCommand(): Array<String> {
-            return readinessProbe(HOST, db.port)
+            return readinessProbe(readinessProbeHost, db.port)
         }
 
         internal fun getImageName(): String {
             return "$repository:$tag"
         }
-
     }
 }
 
