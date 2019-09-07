@@ -8,9 +8,9 @@ plugins {
     `maven-publish`
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "0.10.1"
-    id("com.gradle.build-scan") version "2.3"
-    id("pl.droidsonroids.jacoco.testkit") version "1.0.4"
-    id("com.github.ben-manes.versions").version("0.21.0")
+    id("com.gradle.build-scan") version "3.0"
+    id("pl.droidsonroids.jacoco.testkit") version "1.0.5"
+    id("com.github.ben-manes.versions").version("0.27.0")
 }
 
 repositories {
@@ -91,17 +91,17 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "5.5.1"
+        gradleVersion = "5.6.3"
         distributionType = ALL
     }
 }
 
 
 dependencies {
-    implementation("org.jooq:jooq-codegen:3.11.11")
+    implementation("org.jooq:jooq-codegen:3.11.12")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2")
-    implementation("com.github.docker-java:docker-java:3.1.2")
-    implementation("org.flywaydb:flyway-core:5.2.4")
+    implementation("com.github.docker-java:docker-java:3.1.5")
+    implementation("org.flywaydb:flyway-core:6.0.7")
 
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
     testCompileOnly(gradleTestKit())

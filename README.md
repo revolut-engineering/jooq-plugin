@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.11")
+  implementation("org.jooq:jooq:3.11.12")
   "jdbc"("org.postgresql:postgresql:42.2.5")
 }
 ```
@@ -61,7 +61,7 @@ tasks {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.11")
+  implementation("org.jooq:jooq:3.11.12")
   "jdbc"("org.postgresql:postgresql:42.2.5")
 }
 ```
@@ -105,7 +105,7 @@ jooq {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.11")
+  implementation("org.jooq:jooq:3.11.12")
   "jdbc"("mysql:mysql-connector-java:8.0.15")
 }
 ```
@@ -134,7 +134,7 @@ tasks {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.11")
+  implementation("org.jooq:jooq:3.11.12")
   "jdbc"("org.postgresql:postgresql:42.2.5")
 }
 ```
