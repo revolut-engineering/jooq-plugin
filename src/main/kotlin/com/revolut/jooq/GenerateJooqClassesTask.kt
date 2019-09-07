@@ -90,8 +90,8 @@ open class GenerateJooqClassesTask : DefaultTask() {
 
 
     init {
-        val sourceSets = project.properties["sourceSets"] as SourceSetContainer
-        sourceSets.named("main") {
+        val sourceSets = project.properties["sourceSets"] as SourceSetContainer?
+        sourceSets?.named("main") {
             java {
                 srcDir(outputDirectory)
             }
