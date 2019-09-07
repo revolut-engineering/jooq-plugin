@@ -801,6 +801,51 @@ class JooqDockerPluginSpec extends Specification {
         Files.exists(mainClass)
     }
 
+    def "source sets and tasks are configured for kotlin project"() {
+        given:
+        prepareBuildGradleFile("""
+                      plugins {
+                          kotlin("jvm").version("1.3.50")
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      dependencies {
+                          implementation(kotlin("stdlib"))
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.10.8")
+                          implementation("javax.annotation:javax.annotation-api:1.3.2")
+                      }
+                      """)
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
+        writeProjectFile("src/main/kotlin/com/test/Main.kt",
+                """
+                package com.test
+                
+                import org.jooq.generated.Tables.FOO
+                
+                fun main() = println(FOO.ID.name)
+                """);
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("classes")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        result.task(":classes").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def mainClass = Paths.get(projectDir.getPath(), "build/classes/kotlin/main/com/test/MainKt.class")
+        Files.exists(generatedFooClass)
+        Files.exists(mainClass)
+    }
+
     private void prepareBuildGradleFile(String script) {
         def buildGradleFile = new File(projectDir, "build.gradle.kts")
         buildGradleFile.write(script)
