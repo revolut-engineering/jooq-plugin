@@ -728,6 +728,45 @@ class JooqDockerPluginSpec extends Specification {
         Files.notExists(generatedFlywaySchemaClass)
     }
 
+    def "outputDirectory task property is respected"() {
+        given:
+        prepareBuildGradleFile(projectDir,
+                """
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              outputDirectory.set(project.layout.buildDirectory.dir("gen"))
+                          }
+                      }
+                      
+                      dependencies {
+                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/gen/org/jooq/generated/tables/Foo.java")
+        def generatedFlywayClass = Paths.get(projectDir.getPath(), "build/gen/org/jooq/generated/tables/FlywaySchemaHistory.java")
+        Files.exists(generatedFooClass)
+        Files.exists(generatedFlywayClass)
+    }
+
     private static void prepareBuildGradleFile(File dir, String script) {
         def buildGradleFile = new File(dir, "build.gradle.kts")
         buildGradleFile.write(script)

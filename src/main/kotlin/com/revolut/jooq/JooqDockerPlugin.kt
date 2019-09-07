@@ -3,7 +3,6 @@ package com.revolut.jooq
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.tasks.compile.JavaCompile
 
 open class JooqDockerPlugin : Plugin<Project> {
 
@@ -11,13 +10,8 @@ open class JooqDockerPlugin : Plugin<Project> {
         project.pluginManager.apply(JavaPlugin::class.java)
         project.extensions.create("jooq", JooqExtension::class.java)
         project.configurations.create("jdbc")
-        project.tasks.apply {
-            val generateJooqClasses = create("generateJooqClasses", GenerateJooqClassesTask::class.java) {
-                group = "jooq"
-            }
-            withType(JavaCompile::class.java) {
-                dependsOn(generateJooqClasses)
-            }
+        project.tasks.create("generateJooqClasses", GenerateJooqClassesTask::class.java) {
+            group = "jooq"
         }
     }
 }
