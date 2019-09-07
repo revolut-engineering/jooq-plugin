@@ -26,7 +26,7 @@ repositories {
 
 dependencies {
   implementation("org.jooq:jooq:3.10.8")
-  "jdbc"("org.postgresql:postgresql:42.2.5")
+  jdbc("org.postgresql:postgresql:42.2.5")
 }
 ```
 It will look for migration files in `src/main/resources/db/migration` and will output generated classes
@@ -61,7 +61,7 @@ tasks {
 
 dependencies {
   implementation("org.jooq:jooq:3.10.8")
-  "jdbc"("org.postgresql:postgresql:42.2.5")
+  jdbc("org.postgresql:postgresql:42.2.5")
 }
 ```
 
@@ -105,7 +105,7 @@ jooq {
 
 dependencies {
   implementation("org.jooq:jooq:3.10.8")
-  "jdbc"("mysql:mysql-connector-java:8.0.15")
+  jdbc("mysql:mysql-connector-java:8.0.15")
 }
 ```
 
@@ -134,7 +134,7 @@ tasks {
 
 dependencies {
   implementation("org.jooq:jooq:3.10.8")
-  "jdbc"("org.postgresql:postgresql:42.2.5")
+  jdbc("org.postgresql:postgresql:42.2.5")
 }
 ```
 
@@ -162,7 +162,7 @@ repositories {
 
 dependencies {
   implementation("org.jooq:jooq:3.9.6")
-  "jdbc"("org.postgresql:postgresql:42.2.5")
+  jdbc("org.postgresql:postgresql:42.2.5")
 }
 ```
 

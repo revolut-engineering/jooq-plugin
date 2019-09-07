@@ -18,13 +18,12 @@ class JooqDockerPluginSpec extends Specification {
 
     def setup() {
         projectDir = temporaryFolder.newFolder()
-        copyResource("testkit-gradle.properties", new File(projectDir, "gradle.properties"))
+        copyResource("testkit-gradle.properties", "gradle.properties")
     }
 
     def "plugin is applicable"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -42,8 +41,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "generates jooq classes for PostgreSQL db with default config"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -53,10 +51,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
 
         when:
         def result = GradleRunner.create()
@@ -75,8 +73,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "generates jooq classes for PostgreSQL db with default config for multiple schemas"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -92,10 +89,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init_multiple_schemas.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_multiple_schemas.sql"))
+        copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
 
         when:
         def result = GradleRunner.create()
@@ -116,8 +113,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "generates jooq classes for PostgreSQL db with default config for multiple schemas and renames package"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -134,10 +130,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init_multiple_schemas.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_multiple_schemas.sql"))
+        copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
 
         when:
         def result = GradleRunner.create()
@@ -156,8 +152,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "respects the generator customizations"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -176,10 +171,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init_multiple_schemas.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_multiple_schemas.sql"))
+        copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
 
         when:
         def result = GradleRunner.create()
@@ -198,8 +193,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "up to date check works for output dir"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -209,10 +203,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
 
         when:
         def firstRun = GradleRunner.create()
@@ -240,8 +234,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "up to date check works for input dir"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -251,10 +244,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
 
         when:
         def firstRun = GradleRunner.create()
@@ -267,7 +260,7 @@ class JooqDockerPluginSpec extends Specification {
                 .withPluginClasspath()
                 .withArguments("generateJooqClasses")
                 .build()
-        copyResource("/V02__add_bar.sql", new File(projectDir, "src/main/resources/db/migration/V02__add_bar.sql"))
+        copyResource("/V02__add_bar.sql", "src/main/resources/db/migration/V02__add_bar.sql")
         def runAfterDeletion = GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
@@ -299,7 +292,7 @@ class JooqDockerPluginSpec extends Specification {
                 }
                 
                 dependencies {
-                    "jdbc"("org.postgresql:postgresql:42.2.5")
+                    jdbc("org.postgresql:postgresql:42.2.5")
                 }
                 """
         def extensionUpdatedBuildGradle =
@@ -319,11 +312,11 @@ class JooqDockerPluginSpec extends Specification {
                 }
                 
                 dependencies {
-                    "jdbc"("org.postgresql:postgresql:42.2.5")
+                    jdbc("org.postgresql:postgresql:42.2.5")
                 }
                 """
-        prepareBuildGradleFile(projectDir, initialBuildGradle)
-        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+        prepareBuildGradleFile(initialBuildGradle)
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
 
         when:
         def initialResult = GradleRunner.create()
@@ -331,7 +324,7 @@ class JooqDockerPluginSpec extends Specification {
                 .withPluginClasspath()
                 .withArguments("generateJooqClasses")
                 .build()
-        prepareBuildGradleFile(projectDir, extensionUpdatedBuildGradle)
+        prepareBuildGradleFile(extensionUpdatedBuildGradle)
         def resultAfterChangeToExtension = GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
@@ -371,7 +364,7 @@ class JooqDockerPluginSpec extends Specification {
                 }
                 
                 dependencies {
-                    "jdbc"("org.postgresql:postgresql:42.2.5")
+                    jdbc("org.postgresql:postgresql:42.2.5")
                 }
                 """
         def updatedBuildGradle =
@@ -394,11 +387,11 @@ class JooqDockerPluginSpec extends Specification {
                 }
                 
                 dependencies {
-                    "jdbc"("org.postgresql:postgresql:42.2.5")
+                    jdbc("org.postgresql:postgresql:42.2.5")
                 }
                 """
-        copyResource("/V01__init_multiple_schemas.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_multiple_schemas.sql"))
-        prepareBuildGradleFile(projectDir, initialBuildGradle)
+        copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
+        prepareBuildGradleFile(initialBuildGradle)
 
         when:
         def initialRun = GradleRunner.create()
@@ -406,7 +399,7 @@ class JooqDockerPluginSpec extends Specification {
                 .withPluginClasspath()
                 .withArguments("generateJooqClasses")
                 .build()
-        prepareBuildGradleFile(projectDir, updatedBuildGradle)
+        prepareBuildGradleFile(updatedBuildGradle)
         def runAfterUpdate = GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
@@ -430,8 +423,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "generates jooq classes in a given package"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -447,10 +439,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
 
         when:
         def result = GradleRunner.create()
@@ -467,8 +459,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "plugin is configurable"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -506,10 +497,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("mysql:mysql-connector-java:8.0.15")
+                          jdbc("mysql:mysql-connector-java:8.0.15")
                       }
                       """)
-        copyResource("/V01__init_mysql.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_mysql.sql"))
+        copyResource("/V01__init_mysql.sql", "src/main/resources/db/migration/V01__init_mysql.sql")
 
         when:
         def result = GradleRunner.create()
@@ -526,8 +517,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "flyway configuration overridden with flywayProperties task input"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -543,10 +533,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init_with_placeholders.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_with_placeholders.sql"))
+        copyResource("/V01__init_with_placeholders.sql", "src/main/resources/db/migration/V01__init_with_placeholders.sql")
 
         when:
         def result = GradleRunner.create()
@@ -587,8 +577,8 @@ class JooqDockerPluginSpec extends Specification {
                           jdbc "org.postgresql:postgresql:42.2.5"
                       }
                       """)
-        copyResource("/V01__init_with_placeholders.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_with_placeholders.sql"))
-        copyResource("/V02__add_bar.sql", new File(projectDir, "src/main/resources/db/migration/V02__add_bar.sql"))
+        copyResource("/V01__init_with_placeholders.sql", "src/main/resources/db/migration/V01__init_with_placeholders.sql")
+        copyResource("/V02__add_bar.sql", "src/main/resources/db/migration/V02__add_bar.sql")
 
         when:
         def result = GradleRunner.create()
@@ -607,8 +597,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "output schema to default properly passed to jOOQ generator"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -624,10 +613,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
 
         when:
         def result = GradleRunner.create()
@@ -646,8 +635,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "exclude flyway schema history"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -663,10 +651,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
 
         when:
         def result = GradleRunner.create()
@@ -685,8 +673,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "exclude flyway schema history without overriding existing excludes"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -706,10 +693,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init_multiple_schemas.sql", new File(projectDir, "src/main/resources/db/migration/V01__init_multiple_schemas.sql"))
+        copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
 
         when:
         def result = GradleRunner.create()
@@ -730,8 +717,7 @@ class JooqDockerPluginSpec extends Specification {
 
     def "outputDirectory task property is respected"() {
         given:
-        prepareBuildGradleFile(projectDir,
-                """
+        prepareBuildGradleFile("""
                       plugins {
                           id("com.revolut.jooq-docker")
                       }
@@ -747,10 +733,10 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       dependencies {
-                          "jdbc"("org.postgresql:postgresql:42.2.5")
+                          jdbc("org.postgresql:postgresql:42.2.5")
                       }
                       """)
-        copyResource("/V01__init.sql", new File(projectDir, "src/main/resources/db/migration/V01__init.sql"))
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
 
         when:
         def result = GradleRunner.create()
@@ -767,13 +753,68 @@ class JooqDockerPluginSpec extends Specification {
         Files.exists(generatedFlywayClass)
     }
 
-    private static void prepareBuildGradleFile(File dir, String script) {
-        def buildGradleFile = new File(dir, "build.gradle.kts")
+    def "source sets and tasks are configured for java project"() {
+        given:
+        prepareBuildGradleFile("""
+                      plugins {
+                          java
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      dependencies {
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.10.8")
+                          implementation("javax.annotation:javax.annotation-api:1.3.2")
+                      }
+                      """)
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
+        writeProjectFile("src/main/java/com/test/Main.java",
+                """
+                package com.test;
+                
+                import static org.jooq.generated.Tables.FOO;
+                
+                public class Main {
+                    public static void main(String[] args) {
+                        System.out.println(FOO.ID.getName());
+                    }
+                }
+                """);
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("classes")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        result.task(":classes").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def mainClass = Paths.get(projectDir.getPath(), "build/classes/java/main/com/test/Main.class")
+        Files.exists(generatedFooClass)
+        Files.exists(mainClass)
+    }
+
+    private void prepareBuildGradleFile(String script) {
+        def buildGradleFile = new File(projectDir, "build.gradle.kts")
         buildGradleFile.write(script)
     }
 
-    private void copyResource(String resource, File outputFile) {
-        outputFile.parentFile.mkdirs()
-        getClass().getResourceAsStream(resource).transferTo(new FileOutputStream(outputFile))
+    private void copyResource(String resource, String relativePath) {
+        def file = new File(projectDir, relativePath)
+        file.parentFile.mkdirs()
+        getClass().getResourceAsStream(resource).transferTo(new FileOutputStream(file))
+    }
+
+    private void writeProjectFile(String relativePath, String content) {
+        def file = new File(projectDir, relativePath)
+        file.parentFile.mkdirs()
+        file.write(content)
     }
 }
