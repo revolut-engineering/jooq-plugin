@@ -4,10 +4,10 @@ import org.gradle.api.Action
 import java.io.Serializable
 import java.net.ServerSocket
 
-open class JooqExtension : Serializable {
+open class JooqExtension(projectName: String) : Serializable {
     val jdbc = Jdbc()
     val db = Database(jdbc)
-    val image = Image(db)
+    val image = Image(db, projectName)
 
     fun db(configure: Action<Database>) {
         configure.execute(db)
@@ -47,11 +47,11 @@ open class JooqExtension : Serializable {
         }
     }
 
-    class Image(private val db: Database) : Serializable {
+    class Image(private val db: Database, projectName: String) : Serializable {
         var repository = "postgres"
         var tag = "11.2-alpine"
         var envVars: Map<String, Any> = mapOf("POSTGRES_USER" to db.username, "POSTGRES_PASSWORD" to db.password, "POSTGRES_DB" to db.name)
-        var containerName = "uniqueContainerName"
+        var containerName = "jooq-docker-container-${projectName}"
         var readinessProbeHost = "127.0.0.1"
         var readinessProbe = { host: String, port: Int ->
             arrayOf("sh", "-c", "until pg_isready -h $host -p $port; do echo waiting for db; sleep 1; done;")
