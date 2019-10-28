@@ -138,6 +138,31 @@ dependencies {
 }
 ```
 
+To exclude flyway schema history table from generated classes:
+```kotlin
+plugins {
+  id("com.revolut.jooq-docker")
+}
+
+repositories {
+  jcenter()
+}
+
+tasks {
+  generateJooqClasses {
+    schemas = arrayOf("other")
+    customizeGenerator {
+      database.withExcludes("flyway_schema_history")
+    }
+  }
+}
+
+dependencies {
+  implementation("org.jooq:jooq:3.10.8")
+  jdbc("org.postgresql:postgresql:42.2.5")
+}
+```
+
 To enforce version of the plugin dependencies:
 ```kotlin
 plugins {
