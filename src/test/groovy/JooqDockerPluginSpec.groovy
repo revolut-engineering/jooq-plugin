@@ -551,6 +551,42 @@ class JooqDockerPluginSpec extends Specification {
         Files.exists(generatedClass)
     }
 
+    def "schema version provider is aware of flyway table name override"() {
+        given:
+        prepareBuildGradleFile("""
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              flywayProperties = mapOf("flyway.table" to "some_schema_table")
+                          }
+                      }
+                      
+                      dependencies {
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedFlywayClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/SomeSchemaTable.java")
+        Files.exists(generatedFlywayClass)
+    }
+
     def "plugin works in Groovy gradle file"() {
         given:
         def buildGradleFile = new File(projectDir, "build.gradle")

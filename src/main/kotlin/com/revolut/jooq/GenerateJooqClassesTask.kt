@@ -4,6 +4,7 @@ import com.revolut.jooq.GeneratorCustomizer.NOOP
 import groovy.lang.Closure
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.Location.FILESYSTEM_PREFIX
+import org.flywaydb.core.internal.configuration.ConfigUtils.TABLE
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.property
@@ -146,6 +147,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
         val db = getDb()
         val jdbc = getJdbc()
         FlywaySchemaVersionProvider.primarySchema.set(schemas.first())
+        FlywaySchemaVersionProvider.overrideFlywaySchemaTableNameIfPresent(flywayProperties[TABLE])
         val tool = GenerationTool()
         tool.setClassLoader(jdbcAwareClassLoader)
         tool.run(Configuration()
