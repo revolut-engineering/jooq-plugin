@@ -1,4 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel.CURRENT
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
+import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
 
 plugins {
@@ -57,6 +60,13 @@ tasks {
         if (JavaVersion.current().isJava9Compatible) {
             jvmArgs("--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED")
             jvmArgs("--illegal-access=deny")
+        }
+        testLogging {
+            events(PASSED, FAILED)
+            showExceptions = true
+            showStackTraces = true
+            showCauses = true
+            exceptionFormat = FULL
         }
     }
 
