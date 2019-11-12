@@ -8,7 +8,6 @@ plugins {
     `maven-publish`
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "0.10.1"
-    id("com.gradle.build-scan") version "3.0"
     id("pl.droidsonroids.jacoco.testkit") version "1.0.5"
     id("com.github.ben-manes.versions").version("0.27.0")
 }
@@ -16,11 +15,6 @@ plugins {
 repositories {
     jcenter()
     mavenCentral()
-}
-
-buildScan {
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
 }
 
 kotlinDslPluginOptions {
@@ -91,7 +85,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "5.6.3"
+        gradleVersion = "6.0"
         distributionType = ALL
     }
 }
@@ -101,7 +95,7 @@ dependencies {
     implementation("org.jooq:jooq-codegen:3.11.12")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2")
     implementation("com.github.docker-java:docker-java:3.1.5")
-    implementation("org.flywaydb:flyway-core:6.0.7")
+    implementation("org.flywaydb:flyway-core:6.0.8")
     implementation("org.testcontainers:testcontainers:1.12.3")
 
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
