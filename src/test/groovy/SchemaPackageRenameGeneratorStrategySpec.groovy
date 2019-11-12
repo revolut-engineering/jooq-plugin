@@ -11,7 +11,7 @@ class SchemaPackageRenameGeneratorStrategySpec extends Specification {
 
     def "returns name from mapping when schema or catalog encountered"() {
         given:
-        SchemaPackageRenameGeneratorStrategy.schemaToPackageMapping = ["other": "newName"]
+        SchemaPackageRenameGeneratorStrategy.schemaToPackageMapping.set(["other": "newName"])
 
         when:
         def result = underSpec.getJavaIdentifier(definition)

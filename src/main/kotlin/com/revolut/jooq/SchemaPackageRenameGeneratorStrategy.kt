@@ -7,7 +7,7 @@ import org.jooq.util.SchemaDefinition
 
 class SchemaPackageRenameGeneratorStrategy : DefaultGeneratorStrategy() {
     companion object {
-        var schemaToPackageMapping = emptyMap<String, String>()
+        val schemaToPackageMapping: ThreadLocal<Map<String, String>> = ThreadLocal.withInitial { emptyMap() }
     }
 
     override fun getJavaIdentifier(definition: Definition?): String {
@@ -25,7 +25,7 @@ class SchemaPackageRenameGeneratorStrategy : DefaultGeneratorStrategy() {
             definition is SchemaDefinition || definition is CatalogDefinition
 
     private fun getMappingForDefinition(definition: Definition?) =
-            schemaToPackageMapping[definition?.getSchemaName()]
+            schemaToPackageMapping.get()[definition?.getSchemaName()]
 
     private fun Definition.getSchemaName(): String {
         return inputName
