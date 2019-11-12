@@ -145,7 +145,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
     private fun generateJooqClasses(jdbcAwareClassLoader: ClassLoader, dbHost: String) {
         val db = getDb()
         val jdbc = getJdbc()
-        FlywaySchemaVersionProvider.primarySchema = schemas.first()
+        FlywaySchemaVersionProvider.primarySchema.set(schemas.first())
         val tool = GenerationTool()
         tool.setClassLoader(jdbcAwareClassLoader)
         tool.run(Configuration()
@@ -159,7 +159,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
     }
 
     private fun prepareGeneratorConfig(): Generator {
-        SchemaPackageRenameGeneratorStrategy.schemaToPackageMapping = schemaToPackageMapping.toMap()
+        SchemaPackageRenameGeneratorStrategy.schemaToPackageMapping.set(schemaToPackageMapping.toMap())
         val generatorConfig = Generator()
                 .withName(JavaGenerator::class.qualifiedName)
                 .withStrategy(Strategy()
