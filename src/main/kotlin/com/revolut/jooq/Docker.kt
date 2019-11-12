@@ -11,6 +11,7 @@ import com.github.dockerjava.core.DockerClientConfig
 import com.github.dockerjava.core.command.ExecStartResultCallback
 import com.github.dockerjava.core.command.PullImageResultCallback
 import org.gradle.api.Action
+import org.testcontainers.dockerclient.auth.AuthDelegatingDockerClientConfig
 import java.io.Closeable
 import java.lang.System.*
 import java.util.UUID.randomUUID
@@ -21,7 +22,10 @@ class Docker(private val imageName: String,
              private val readinessCommand: Array<String>,
              private val databaseHostResolver: DatabaseHostResolver,
              private val containerName: String = randomUUID().toString()) : Closeable {
-    private val config: DockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder().build()
+    // https://github.com/docker-java/docker-java/issues/1048
+    private val config: DockerClientConfig = AuthDelegatingDockerClientConfig(DefaultDockerClientConfig
+            .createDefaultConfigBuilder()
+            .build())
     private val docker: DockerClient = DockerClientBuilder.getInstance(config).build()
 
     fun runInContainer(action: Action<String>) {

@@ -102,6 +102,7 @@ dependencies {
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2")
     implementation("com.github.docker-java:docker-java:3.1.5")
     implementation("org.flywaydb:flyway-core:6.0.7")
+    implementation("org.testcontainers:testcontainers:1.12.3")
 
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
     testCompileOnly(gradleTestKit())
