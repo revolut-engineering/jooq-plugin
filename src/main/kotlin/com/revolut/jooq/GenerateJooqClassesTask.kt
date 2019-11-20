@@ -16,6 +16,7 @@ import java.io.IOException
 import java.net.URL
 import java.net.URLClassLoader
 
+@CacheableTask
 open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     var schemas = arrayOf("public")
@@ -33,8 +34,10 @@ open class GenerateJooqClassesTask : DefaultTask() {
     val generatorCustomizer = project.objects.property(GeneratorCustomizer::class).convention(NOOP)
 
     @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
     val inputDirectory = project.objects.fileCollection().from("src/main/resources/db/migration")
     @OutputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
     val outputDirectory = project.objects.directoryProperty().convention(project.layout.buildDirectory.dir("generated-jooq"))
 
     @Internal

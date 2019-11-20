@@ -6,6 +6,7 @@ import spock.lang.Specification
 import java.nio.file.Files
 import java.nio.file.Paths
 
+import static org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE
 
@@ -880,6 +881,62 @@ class JooqDockerPluginSpec extends Specification {
         def mainClass = Paths.get(projectDir.getPath(), "build/classes/kotlin/main/com/test/MainKt.class")
         Files.exists(generatedFooClass)
         Files.exists(mainClass)
+    }
+
+    def "generateJooqClasses task output is loaded from cache"() {
+        given:
+        configureLocalGradleCache();
+        prepareBuildGradleFile("""
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      dependencies {
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses", "--build-cache")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+
+        when:
+        new File(projectDir, 'build').deleteDir()
+        result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses", "--build-cache")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == FROM_CACHE
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def generatedFlywayClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/FlywaySchemaHistory.java")
+        Files.exists(generatedFooClass)
+        Files.exists(generatedFlywayClass)
+    }
+
+    def configureLocalGradleCache() {
+        File localBuildCacheDirectory = temporaryFolder.newFolder();
+        def settingsGradleFile = new File(projectDir, "settings.gradle.kts")
+        settingsGradleFile.write("""
+                        buildCache {
+                            local {
+                                directory = "${localBuildCacheDirectory.path}"
+                            }
+                        }
+                        """)
     }
 
     private void prepareBuildGradleFile(String script) {
