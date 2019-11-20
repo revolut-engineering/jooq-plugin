@@ -37,7 +37,6 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @PathSensitive(PathSensitivity.RELATIVE)
     val inputDirectory = project.objects.fileCollection().from("src/main/resources/db/migration")
     @OutputDirectory
-    @PathSensitive(PathSensitivity.RELATIVE)
     val outputDirectory = project.objects.directoryProperty().convention(project.layout.buildDirectory.dir("generated-jooq"))
 
     @Internal

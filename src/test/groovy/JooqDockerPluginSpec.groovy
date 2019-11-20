@@ -902,28 +902,38 @@ class JooqDockerPluginSpec extends Specification {
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
 
         when:
-        def result = GradleRunner.create()
+        //first run loads to cache
+        def firstRun = GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("generateJooqClasses", "--build-cache")
                 .build()
-
-        then:
-        result.task(":generateJooqClasses").outcome == SUCCESS
-
-        when:
+        //second run uses from cache
         new File(projectDir, 'build').deleteDir()
-        result = GradleRunner.create()
+        def secondRun = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses", "--build-cache")
+                .build()
+        //third run got changes and can't use cached output
+        new File(projectDir, 'build').deleteDir()
+        copyResource("/V02__add_bar.sql", "src/main/resources/db/migration/V02__add_bar.sql")
+        def thirdRun = GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("generateJooqClasses", "--build-cache")
                 .build()
 
         then:
-        result.task(":generateJooqClasses").outcome == FROM_CACHE
+        firstRun.task(":generateJooqClasses").outcome == SUCCESS
+        secondRun.task(":generateJooqClasses").outcome == FROM_CACHE
+        thirdRun.task(":generateJooqClasses").outcome == SUCCESS
+
         def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
         def generatedFlywayClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/FlywaySchemaHistory.java")
+        def generatedBarClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Bar.java")
         Files.exists(generatedFooClass)
+        Files.exists(generatedBarClass)
         Files.exists(generatedFlywayClass)
     }
 
