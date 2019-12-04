@@ -170,7 +170,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
                         .withName(SchemaPackageRenameGeneratorStrategy::class.qualifiedName))
                 .withDatabase(Database()
                         .withName(getJdbc().jooqMetaName)
-                        .withSchemata(schemas.map(this::toSchema))
+                        .withSchemata(schemas.map(this::toSchemaMappingType))
                         .withSchemaVersionProvider(FlywaySchemaVersionProvider::class.qualifiedName)
                         .withIncludes(".*")
                         .withExcludes(""))
@@ -183,8 +183,8 @@ open class GenerateJooqClassesTask : DefaultTask() {
         return generatorConfig
     }
 
-    private fun toSchema(schemaName: String): Schema {
-        return Schema()
+    private fun toSchemaMappingType(schemaName: String): SchemaMappingType {
+        return SchemaMappingType()
                 .withInputSchema(schemaName)
                 .withOutputSchemaToDefault(outputSchemaToDefault.contains(schemaName))
     }

@@ -102,11 +102,11 @@ tasks {
 
 
 dependencies {
-    implementation("org.jooq:jooq-codegen:3.11.12")
+    implementation("org.jooq:jooq-codegen:3.12.3")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2")
     implementation("com.github.docker-java:docker-java:3.1.5")
-    implementation("org.flywaydb:flyway-core:6.0.8")
-    implementation("org.testcontainers:testcontainers:1.12.3")
+    implementation("org.flywaydb:flyway-core:6.1.0")
+    implementation("org.testcontainers:testcontainers:1.12.4")
 
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
     testCompileOnly(gradleTestKit())

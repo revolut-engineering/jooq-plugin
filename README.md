@@ -11,7 +11,10 @@ Plugin registers task `generateJooqClasses` that does following steps:
  * runs migrations using Flyway
  * generates jOOQ classes
 
-**Use `0.2.x` and later releases for jOOQ versions `3.11.x` and later. For earlier versions use `0.1.x` release**
+**Use**:
+ - **`0.3.x` and later for jOOQ versions `3.12.x` and later**
+ - **`0.2.x` and later releases for jOOQ versions `3.11.x` and later**
+ - **For earlier versions use `0.1.x` release**
 
 # Examples
 
@@ -26,7 +29,7 @@ repositories {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.12")
+  implementation("org.jooq:jooq:3.12.3")
   jdbc("org.postgresql:postgresql:42.2.5")
 }
 ```
@@ -61,7 +64,7 @@ tasks {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.12")
+  implementation("org.jooq:jooq:3.12.3")
   jdbc("org.postgresql:postgresql:42.2.5")
 }
 ```
@@ -105,7 +108,7 @@ jooq {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.12")
+  implementation("org.jooq:jooq:3.12.3")
   jdbc("mysql:mysql-connector-java:8.0.15")
 }
 ```
@@ -134,7 +137,7 @@ tasks {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.12")
+  implementation("org.jooq:jooq:3.12.3")
   jdbc("org.postgresql:postgresql:42.2.5")
 }
 ```
@@ -159,7 +162,7 @@ tasks {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.12")
+  implementation("org.jooq:jooq:3.12.3")
   jdbc("org.postgresql:postgresql:42.2.5")
 }
 ```
@@ -176,7 +179,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jooq:jooq-codegen:3.11.10") {
+    classpath("org.jooq:jooq-codegen:3.12.0") {
       isForce = true
     }
   }
@@ -187,7 +190,7 @@ repositories {
 }
 
 dependencies {
-  implementation("org.jooq:jooq:3.11.10")
+  implementation("org.jooq:jooq:3.12.0")
   jdbc("org.postgresql:postgresql:42.2.5")
 }
 ```
