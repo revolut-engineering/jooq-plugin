@@ -1,13 +1,12 @@
 package com.revolut.jooq
 
-import com.revolut.jooq.GeneratorCustomizer.NOOP
 import groovy.lang.Closure
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.Location.FILESYSTEM_PREFIX
 import org.flywaydb.core.internal.configuration.ConfigUtils.TABLE
+import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
-import org.gradle.kotlin.dsl.property
 import org.jooq.codegen.GenerationTool
 import org.jooq.codegen.JavaGenerator
 import org.jooq.meta.jaxb.*
@@ -31,7 +30,8 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     var excludeFlywayTable = false
     @Input
-    val generatorCustomizer = project.objects.property(GeneratorCustomizer::class).convention(NOOP)
+    var generatorConfig = project.provider(this::prepareGeneratorConfig)
+        private set
 
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
@@ -105,13 +105,19 @@ open class GenerateJooqClassesTask : DefaultTask() {
 
 
     @Suppress("unused")
-    fun customizeGenerator(customizer: GeneratorCustomizer) {
-        generatorCustomizer.set(customizer)
+    fun customizeGenerator(customizer: Action<Generator>) {
+        generatorConfig = generatorConfig.map {
+            customizer.execute(it)
+            it
+        }
     }
 
     @Suppress("unused")
     fun customizeGenerator(closure: Closure<Generator>) {
-        generatorCustomizer.set(ClosureGeneratorCustomizer(closure))
+        generatorConfig = generatorConfig.map {
+            closure.rehydrate(it, it, it).call(it)
+            it
+        }
     }
 
     @TaskAction
@@ -150,6 +156,9 @@ open class GenerateJooqClassesTask : DefaultTask() {
         val jdbc = getJdbc()
         FlywaySchemaVersionProvider.primarySchema.set(schemas.first())
         FlywaySchemaVersionProvider.overrideFlywaySchemaTableNameIfPresent(flywayProperties[TABLE])
+        SchemaPackageRenameGeneratorStrategy.schemaToPackageMapping.set(schemaToPackageMapping.toMap())
+        val generator = generatorConfig.get()
+        excludeFlywaySchemaIfNeeded(generator)
         val tool = GenerationTool()
         tool.setClassLoader(jdbcAwareClassLoader)
         tool.run(Configuration()
@@ -159,12 +168,11 @@ open class GenerateJooqClassesTask : DefaultTask() {
                         .withUrl(db.getUrl(dbHost))
                         .withUser(db.username)
                         .withPassword(db.password))
-                .withGenerator(prepareGeneratorConfig()))
+                .withGenerator(generator))
     }
 
     private fun prepareGeneratorConfig(): Generator {
-        SchemaPackageRenameGeneratorStrategy.schemaToPackageMapping.set(schemaToPackageMapping.toMap())
-        val generatorConfig = Generator()
+        return Generator()
                 .withName(JavaGenerator::class.qualifiedName)
                 .withStrategy(Strategy()
                         .withName(SchemaPackageRenameGeneratorStrategy::class.qualifiedName))
@@ -178,9 +186,6 @@ open class GenerateJooqClassesTask : DefaultTask() {
                         .withPackageName(basePackageName)
                         .withDirectory(outputDirectory.asFile.get().toString())
                         .withClean(true))
-        generatorCustomizer.get().execute(generatorConfig)
-        excludeFlywaySchemaIfNeeded(generatorConfig)
-        return generatorConfig
     }
 
     private fun toSchemaMappingType(schemaName: String): SchemaMappingType {
