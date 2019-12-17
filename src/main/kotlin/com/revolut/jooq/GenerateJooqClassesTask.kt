@@ -29,7 +29,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
     var schemaToPackageMapping = emptyMap<String, String>()
     @Input
     var excludeFlywayTable = false
-    @Input
+    @Internal
     var generatorConfig = project.provider(this::prepareGeneratorConfig)
         private set
 
@@ -91,6 +91,10 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     fun getReadinessCommand() = getImage().getReadinessCommand()
 
+    @Input
+    fun getCleanedGeneratorConfig() = generatorConfig.get().apply {
+        target.withDirectory("ignored")
+    }
 
     init {
         val sourceSets = project.properties["sourceSets"] as SourceSetContainer?
