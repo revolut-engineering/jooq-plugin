@@ -102,7 +102,7 @@ tasks {
 
 
 dependencies {
-    implementation("org.jooq:jooq-codegen:3.12.3")
+    implementation("org.jooq:jooq-codegen:3.13.1")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2")
     implementation("com.github.docker-java:docker-java:3.1.5")
     implementation("org.flywaydb:flyway-core:6.1.1")
