@@ -156,6 +156,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
     }
 
     private fun generateJooqClasses(jdbcAwareClassLoader: ClassLoader, dbHost: String) {
+        project.delete(outputDirectory)
         val db = getDb()
         val jdbc = getJdbc()
         FlywaySchemaVersionProvider.primarySchema.set(schemas.first())

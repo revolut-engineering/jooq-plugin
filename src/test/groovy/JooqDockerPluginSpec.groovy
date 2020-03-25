@@ -937,6 +937,95 @@ class JooqDockerPluginSpec extends Specification {
         Files.exists(generatedFlywayClass)
     }
 
+    def "regenerates jooq classes when out of date even though output directory already has classes generated"() {
+        given:
+        def initialBuildGradle =
+                """
+                import org.jooq.meta.jaxb.ForcedType
+                
+                plugins {
+                    id("com.revolut.jooq-docker")
+                }
+                
+                repositories {
+                    jcenter()
+                }
+                
+                tasks {
+                    generateJooqClasses {
+                        customizeGenerator {
+                            database.withForcedTypes(ForcedType()
+                                .withUserType("com.example.UniqueClassForFirstGeneration")
+                                .withBinding("com.example.PostgresJSONGsonBinding")
+                                .withTypes("JSONB"))
+                        }
+                    }
+                }
+                
+                dependencies {
+                    jdbc("org.postgresql:postgresql:42.2.5")
+                }
+                """
+        def updatedBuildFile =
+                """
+                import org.jooq.meta.jaxb.ForcedType
+                
+                plugins {
+                    id("com.revolut.jooq-docker")
+                }
+                
+                repositories {
+                    jcenter()
+                }
+                
+                tasks {
+                    generateJooqClasses {
+                        customizeGenerator {
+                            database.withForcedTypes(ForcedType()
+                                .withUserType("com.example.UniqueClassForSecondGeneration")
+                                .withBinding("com.example.PostgresJSONGsonBinding")
+                                .withTypes("JSONB"))
+                        }
+                    }
+                }
+                
+                dependencies {
+                    jdbc("org.postgresql:postgresql:42.2.5")
+                }
+                """
+        prepareBuildGradleFile(initialBuildGradle)
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
+
+        when:
+        def firstRun = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        firstRun.task(":generateJooqClasses").outcome == SUCCESS
+        with(Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")) {
+            Files.exists(it)
+            Files.readAllLines(it).any { it.contains("com.example.UniqueClassForFirstGeneration") }
+        }
+
+        when:
+        prepareBuildGradleFile(updatedBuildFile)
+        def secondRun = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        secondRun.task(":generateJooqClasses").outcome == SUCCESS
+        with(Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")) {
+            Files.exists(it)
+            Files.readAllLines(it).any { it.contains("com.example.UniqueClassForSecondGeneration") }
+        }
+    }
+
     def configureLocalGradleCache() {
         File localBuildCacheDirectory = temporaryFolder.newFolder();
         def settingsGradleFile = new File(projectDir, "settings.gradle.kts")
