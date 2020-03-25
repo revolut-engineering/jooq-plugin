@@ -6,19 +6,19 @@ import org.jooq.meta.SchemaVersionProvider
 
 class FlywaySchemaVersionProvider : SchemaVersionProvider {
     companion object {
-        private const val DEFAULT_FLYWAY_TABLE_NAME = "flyway_schema_history"
-        val primarySchema = ThreadLocal<String>()
-        private val tableName = ThreadLocal.withInitial { DEFAULT_FLYWAY_TABLE_NAME }
+        private val defaultSchemaName = ThreadLocal<String>()
+        private val flywayTableName = ThreadLocal<String>()
 
-        fun overrideFlywaySchemaTableNameIfPresent(tableNameOverride: String?) {
-            tableName.set(tableNameOverride ?: DEFAULT_FLYWAY_TABLE_NAME)
+        fun setup(defaultSchemaName: String, flywayTableName: String) {
+            this.defaultSchemaName.set(defaultSchemaName)
+            this.flywayTableName.set(flywayTableName)
         }
     }
 
     override fun version(schema: SchemaDefinition): String {
         return schema.database.create()
                 .select(max(field("version")).`as`("max_version"))
-                .from(table(name(primarySchema.get(), tableName.get())))
+                .from(table(name(defaultSchemaName.get(), flywayTableName.get())))
                 .fetchSingle("max_version", String::class.java)
     }
 }

@@ -1026,6 +1026,46 @@ class JooqDockerPluginSpec extends Specification {
         }
     }
 
+    def "generates flyway table in first schema by default"() {
+        given:
+        prepareBuildGradleFile("""
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              schemas = arrayOf("other", "public")
+                          }
+                      }
+                      
+                      dependencies {
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedPublic = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/public_/tables/Foo.java")
+        def generatedOther = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/other/tables/Bar.java")
+        def generatedFlywaySchemaClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/other/tables/FlywaySchemaHistory.java")
+        Files.exists(generatedPublic)
+        Files.exists(generatedOther)
+        Files.exists(generatedFlywaySchemaClass)
+    }
+
     def configureLocalGradleCache() {
         File localBuildCacheDirectory = temporaryFolder.newFolder();
         def settingsGradleFile = new File(projectDir, "settings.gradle.kts")

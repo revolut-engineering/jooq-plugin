@@ -3,6 +3,7 @@ package com.revolut.jooq
 import groovy.lang.Closure
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.Location.FILESYSTEM_PREFIX
+import org.flywaydb.core.internal.configuration.ConfigUtils.DEFAULT_SCHEMA
 import org.flywaydb.core.internal.configuration.ConfigUtils.TABLE
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
@@ -150,17 +151,22 @@ open class GenerateJooqClassesTask : DefaultTask() {
                 .dataSource(db.getUrl(dbHost), db.username, db.password)
                 .schemas(*schemas)
                 .locations(*inputDirectory.map { "$FILESYSTEM_PREFIX${it.absolutePath}" }.toTypedArray())
+                .defaultSchema(defaultFlywaySchema())
+                .table(flywayTableName())
                 .configuration(flywayProperties)
                 .load()
                 .migrate()
     }
 
+    private fun defaultFlywaySchema() = flywayProperties[DEFAULT_SCHEMA] ?: schemas.first()
+
+    private fun flywayTableName() = flywayProperties[TABLE] ?: "flyway_schema_history"
+
     private fun generateJooqClasses(jdbcAwareClassLoader: ClassLoader, dbHost: String) {
         project.delete(outputDirectory)
         val db = getDb()
         val jdbc = getJdbc()
-        FlywaySchemaVersionProvider.primarySchema.set(schemas.first())
-        FlywaySchemaVersionProvider.overrideFlywaySchemaTableNameIfPresent(flywayProperties[TABLE])
+        FlywaySchemaVersionProvider.setup(defaultFlywaySchema(), flywayTableName())
         SchemaPackageRenameGeneratorStrategy.schemaToPackageMapping.set(schemaToPackageMapping.toMap())
         val generator = generatorConfig.get()
         excludeFlywaySchemaIfNeeded(generator)
