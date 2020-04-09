@@ -10,7 +10,7 @@ plugins {
     jacoco
     `maven-publish`
     id("java-gradle-plugin")
-    id("com.gradle.plugin-publish") version "0.10.1"
+    id("com.gradle.plugin-publish") version "0.11.0"
     id("pl.droidsonroids.jacoco.testkit") version "1.0.5"
     id("com.github.ben-manes.versions").version("0.28.0")
 }
