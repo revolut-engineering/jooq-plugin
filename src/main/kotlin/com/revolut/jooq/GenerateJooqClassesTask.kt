@@ -7,7 +7,10 @@ import org.flywaydb.core.internal.configuration.ConfigUtils.DEFAULT_SCHEMA
 import org.flywaydb.core.internal.configuration.ConfigUtils.TABLE
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
+import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.*
+import org.gradle.api.tasks.SourceSet.MAIN_SOURCE_SET_NAME
 import org.jooq.codegen.GenerationTool
 import org.jooq.codegen.JavaGenerator
 import org.jooq.meta.jaxb.*
@@ -20,16 +23,22 @@ import java.net.URLClassLoader
 open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     var schemas = arrayOf("public")
+
     @Input
     var basePackageName = "org.jooq.generated"
+
     @Input
     var flywayProperties = emptyMap<String, String>()
+
     @Input
     var outputSchemaToDefault = emptySet<String>()
+
     @Input
     var schemaToPackageMapping = emptyMap<String, String>()
+
     @Input
     var excludeFlywayTable = false
+
     @Internal
     var generatorConfig = project.provider(this::prepareGeneratorConfig)
         private set
@@ -37,6 +46,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
     val inputDirectory = project.objects.fileCollection().from("src/main/resources/db/migration")
+
     @OutputDirectory
     val outputDirectory = project.objects.directoryProperty().convention(project.layout.buildDirectory.dir("generated-jooq"))
 
@@ -98,10 +108,11 @@ open class GenerateJooqClassesTask : DefaultTask() {
     }
 
     init {
-        val sourceSets = project.properties["sourceSets"] as SourceSetContainer?
-        sourceSets?.named("main") {
-            java {
-                srcDir(outputDirectory)
+        project.plugins.withType(JavaPlugin::class.java) {
+            project.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.named(MAIN_SOURCE_SET_NAME) {
+                java {
+                    srcDir(outputDirectory)
+                }
             }
         }
     }
