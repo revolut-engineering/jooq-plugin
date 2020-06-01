@@ -208,6 +208,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
                         .withPackageName(basePackageName)
                         .withDirectory(outputDirectory.asFile.get().toString())
                         .withClean(true))
+                .withGenerate(Generate())
     }
 
     private fun toSchemaMappingType(schemaName: String): SchemaMappingType {
