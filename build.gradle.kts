@@ -10,8 +10,8 @@ plugins {
     jacoco
     `maven-publish`
     id("java-gradle-plugin")
-    id("com.gradle.plugin-publish") version "0.11.0"
-    id("pl.droidsonroids.jacoco.testkit") version "1.0.5"
+    id("com.gradle.plugin-publish") version "0.12.0"
+    id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
     id("com.github.ben-manes.versions").version("0.28.0")
 }
 
@@ -95,7 +95,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.3"
+        gradleVersion = "6.5"
         distributionType = ALL
     }
 }
@@ -112,10 +112,10 @@ afterEvaluate {
 
 
 dependencies {
-    implementation("org.jooq:jooq-codegen:3.13.1")
-    implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2")
+    implementation("org.jooq:jooq-codegen:3.13.2")
+    implementation("org.glassfish.jaxb:jaxb-runtime:2.3.3")
     implementation("com.github.docker-java:docker-java-transport-okhttp:3.2.1")
-    implementation("org.flywaydb:flyway-core:6.3.2")
+    implementation("org.flywaydb:flyway-core:6.4.3")
     implementation("org.zeroturnaround:zt-exec:1.11")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
 
