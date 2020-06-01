@@ -100,13 +100,24 @@ tasks {
     }
 }
 
+afterEvaluate {
+    tasks.jacocoTestReport {
+        classDirectories.setFrom(classDirectories.files.map {
+            fileTree(it) {
+                exclude("com/revolut/shaded/org/testcontainers/**/*")
+            }
+        })
+    }
+}
+
 
 dependencies {
     implementation("org.jooq:jooq-codegen:3.13.1")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.2")
-    implementation("com.github.docker-java:docker-java:3.2.1")
+    implementation("com.github.docker-java:docker-java-transport-okhttp:3.2.1")
     implementation("org.flywaydb:flyway-core:6.3.2")
-    implementation("org.testcontainers:testcontainers:1.13.0")
+    implementation("org.zeroturnaround:zt-exec:1.11")
+    compileOnly("javax.annotation:javax.annotation-api:1.3.2")
 
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
     testCompileOnly(gradleTestKit())

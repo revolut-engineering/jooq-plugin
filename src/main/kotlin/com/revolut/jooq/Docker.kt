@@ -1,17 +1,18 @@
 package com.revolut.jooq
 
 import com.github.dockerjava.api.DockerClient
+import com.github.dockerjava.api.command.PullImageResultCallback
 import com.github.dockerjava.api.model.ExposedPort
 import com.github.dockerjava.api.model.HostConfig.newHostConfig
 import com.github.dockerjava.api.model.Ports
 import com.github.dockerjava.api.model.Ports.Binding.bindPort
 import com.github.dockerjava.core.DefaultDockerClientConfig
-import com.github.dockerjava.core.DockerClientBuilder
 import com.github.dockerjava.core.DockerClientConfig
+import com.github.dockerjava.core.DockerClientImpl
 import com.github.dockerjava.core.command.ExecStartResultCallback
-import com.github.dockerjava.core.command.PullImageResultCallback
+import com.github.dockerjava.okhttp.OkHttpDockerCmdExecFactory
 import org.gradle.api.Action
-import org.testcontainers.dockerclient.auth.AuthDelegatingDockerClientConfig
+import com.revolut.shaded.org.testcontainers.dockerclient.auth.AuthDelegatingDockerClientConfig
 import java.io.Closeable
 import java.lang.System.*
 import java.util.UUID.randomUUID
@@ -26,7 +27,8 @@ class Docker(private val imageName: String,
     private val config: DockerClientConfig = AuthDelegatingDockerClientConfig(DefaultDockerClientConfig
             .createDefaultConfigBuilder()
             .build())
-    private val docker: DockerClient = DockerClientBuilder.getInstance(config).build()
+    private val docker: DockerClient = DockerClientImpl.getInstance(config)
+            .withDockerCmdExecFactory(OkHttpDockerCmdExecFactory())
 
     fun runInContainer(action: Action<String>) {
         try {
