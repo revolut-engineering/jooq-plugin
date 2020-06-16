@@ -8,8 +8,7 @@ jdk:
   - oraclejdk11
 
 script:
-  - ./gradlew build --scan -s
-  - ./gradlew jacocoTestReport
+  - ./gradlew build jacocoTestReport --scan -s
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
