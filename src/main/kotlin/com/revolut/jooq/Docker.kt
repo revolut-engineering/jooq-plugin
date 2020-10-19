@@ -70,8 +70,6 @@ class Docker(private val imageName: String,
                 .withAttachStdout(true)
                 .exec()
         docker.execStartCmd(execCreate.id)
-                .withTty(true)
-                .withStdIn(`in`)
                 .exec(ExecStartResultCallback(out, err))
                 .awaitCompletion()
     }
