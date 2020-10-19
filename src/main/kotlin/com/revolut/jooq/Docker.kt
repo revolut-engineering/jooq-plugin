@@ -82,7 +82,10 @@ class Docker(private val imageName: String,
 
     private fun removeContainer() {
         try {
-            docker.removeContainerCmd(containerName).withForce(true).exec()
+            docker.removeContainerCmd(containerName)
+                    .withRemoveVolumes(true)
+                    .withForce(true)
+                    .exec()
         } catch (e: Exception) {
         }
     }
