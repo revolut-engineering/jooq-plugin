@@ -223,7 +223,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
     }
 
     private fun addFlywaySchemaHistoryToExcludes(currentExcludes: String?): String {
-        return listOf(currentExcludes, "flyway_schema_history")
+        return listOf(currentExcludes, flywayTableName())
                 .filterNot(String?::isNullOrEmpty)
                 .joinToString("|")
     }
