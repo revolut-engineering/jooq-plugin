@@ -708,6 +708,47 @@ class JooqDockerPluginSpec extends Specification {
         Files.notExists(generatedFlywayClass)
     }
 
+
+    def "exclude flyway schema history given custom Flyway table name"() {
+        given:
+        prepareBuildGradleFile("""
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          jcenter()
+                      }
+                      
+                      tasks {
+                          generateJooqClasses {
+                              excludeFlywayTable = true
+                              flywayProperties = mapOf("flyway.table" to "some_schema_table")
+                          }
+                      }
+                      
+                      dependencies {
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                      }
+                      """)
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("generateJooqClasses")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def generatedCustomFlywayClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/SomeSchemaTable.java")
+        Files.exists(generatedFooClass)
+        Files.notExists(generatedCustomFlywayClass)
+    }
+
+
     def "exclude flyway schema history without overriding existing excludes"() {
         given:
         prepareBuildGradleFile("""
