@@ -1,6 +1,6 @@
 # Gradle Docker jOOQ Plugin
 
-[![Build Status](https://travis-ci.org/revolut-engineering/jooq-plugin.svg?branch=master)](https://travis-ci.org/revolut-engineering/jooq-plugin)
+[![Build Status](https://travis-ci.com/revolut-engineering/jooq-plugin.svg?branch=master)](https://travis-ci.com/revolut-engineering/jooq-plugin)
 [![codecov](https://codecov.io/gh/revolut-engineering/jooq-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/revolut-engineering/jooq-plugin)
 [![Gradle Plugins Release](https://img.shields.io/github/release/revolut-engineering/jooq-plugin.svg)](https://plugins.gradle.org/plugin/com.revolut.jooq-docker)
 
@@ -25,7 +25,7 @@ plugins {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 dependencies {
@@ -44,7 +44,7 @@ plugins {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 tasks {
@@ -76,7 +76,7 @@ plugins {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 jooq {
@@ -120,7 +120,7 @@ plugins {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 tasks {
@@ -149,7 +149,7 @@ plugins {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 tasks {
@@ -175,7 +175,7 @@ plugins {
 
 buildscript {
   repositories {
-    jcenter()
+    mavenCentral()
   }
 
   dependencies {
@@ -186,7 +186,7 @@ buildscript {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 dependencies {

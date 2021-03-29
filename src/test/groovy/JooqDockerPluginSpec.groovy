@@ -48,7 +48,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       dependencies {
@@ -80,7 +80,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -120,7 +120,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -159,7 +159,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -200,7 +200,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       dependencies {
@@ -241,7 +241,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       dependencies {
@@ -289,7 +289,7 @@ class JooqDockerPluginSpec extends Specification {
                 }
                 
                 repositories {
-                    jcenter()
+                    mavenCentral()
                 }
                 
                 dependencies {
@@ -309,7 +309,7 @@ class JooqDockerPluginSpec extends Specification {
                 }
                 
                 repositories {
-                    jcenter()
+                    mavenCentral()
                 }
                 
                 dependencies {
@@ -352,7 +352,7 @@ class JooqDockerPluginSpec extends Specification {
                 }
                 
                 repositories {
-                    jcenter()
+                    mavenCentral()
                 }
                 
                 tasks {
@@ -375,7 +375,7 @@ class JooqDockerPluginSpec extends Specification {
                 }
                 
                 repositories {
-                    jcenter()
+                    mavenCentral()
                 }
                 
                 tasks {
@@ -430,7 +430,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -466,7 +466,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       jooq {
@@ -524,7 +524,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -560,7 +560,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -598,7 +598,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -640,7 +640,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -678,7 +678,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -717,7 +717,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -757,7 +757,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -801,7 +801,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -840,7 +840,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       dependencies {
@@ -888,7 +888,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       dependencies {
@@ -933,7 +933,7 @@ class JooqDockerPluginSpec extends Specification {
                       apply(plugin = "java")
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       dependencies {
@@ -981,7 +981,7 @@ class JooqDockerPluginSpec extends Specification {
                       apply(plugin = "java-library")
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       dependencies {
@@ -1035,7 +1035,7 @@ class JooqDockerPluginSpec extends Specification {
                       apply(plugin = "org.jetbrains.kotlin.jvm")
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       dependencies {
@@ -1080,7 +1080,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       dependencies {
@@ -1136,7 +1136,7 @@ class JooqDockerPluginSpec extends Specification {
                 }
                 
                 repositories {
-                    jcenter()
+                    mavenCentral()
                 }
                 
                 tasks {
@@ -1163,7 +1163,7 @@ class JooqDockerPluginSpec extends Specification {
                 }
                 
                 repositories {
-                    jcenter()
+                    mavenCentral()
                 }
                 
                 tasks {
@@ -1222,7 +1222,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
@@ -1262,7 +1262,7 @@ class JooqDockerPluginSpec extends Specification {
                       }
                       
                       repositories {
-                          jcenter()
+                          mavenCentral()
                       }
                       
                       tasks {
