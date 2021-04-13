@@ -15,7 +15,7 @@ class FlywaySchemaVersionProvider : SchemaVersionProvider {
         }
     }
 
-    override fun version(schema: SchemaDefinition): String {
+    override fun version(schema: SchemaDefinition): String? {
         return schema.database.create()
                 .select(max(field("version")).`as`("max_version"))
                 .from(table(name(defaultSchemaName.get(), flywayTableName.get())))

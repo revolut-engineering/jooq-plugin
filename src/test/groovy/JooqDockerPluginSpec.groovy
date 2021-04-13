@@ -845,7 +845,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
-                          implementation("org.jooq:jooq:3.13.1")
+                          implementation("org.jooq:jooq:3.14.8")
                           implementation("javax.annotation:javax.annotation-api:1.3.2")
                       }
                       """)
@@ -894,7 +894,7 @@ class JooqDockerPluginSpec extends Specification {
                       dependencies {
                           implementation(kotlin("stdlib"))
                           jdbc("org.postgresql:postgresql:42.2.5")
-                          implementation("org.jooq:jooq:3.13.1")
+                          implementation("org.jooq:jooq:3.14.8")
                           implementation("javax.annotation:javax.annotation-api:1.3.2")
                       }
                       """)
@@ -938,7 +938,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
-                          "implementation"("org.jooq:jooq:3.13.1")
+                          "implementation"("org.jooq:jooq:3.14.8")
                           "implementation"("javax.annotation:javax.annotation-api:1.3.2")
                       }
                       """)
@@ -986,7 +986,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
-                          "implementation"("org.jooq:jooq:3.13.1")
+                          "implementation"("org.jooq:jooq:3.14.8")
                           "implementation"("javax.annotation:javax.annotation-api:1.3.2")
                       }
                       """)
@@ -1041,7 +1041,7 @@ class JooqDockerPluginSpec extends Specification {
                       dependencies {
                           "implementation"(kotlin("stdlib"))
                           jdbc("org.postgresql:postgresql:42.2.5")
-                          "implementation"("org.jooq:jooq:3.13.1")
+                          "implementation"("org.jooq:jooq:3.14.8")
                           "implementation"("javax.annotation:javax.annotation-api:1.3.2")
                       }
                       """)
