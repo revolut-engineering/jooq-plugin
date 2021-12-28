@@ -1,5 +1,6 @@
 package com.revolut.jooq
 
+import ChildFirstClassLoader
 import groovy.lang.Closure
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.Location.FILESYSTEM_PREFIX
@@ -11,13 +12,12 @@ import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.SourceSet.MAIN_SOURCE_SET_NAME
-import org.jooq.codegen.GenerationTool
-import org.jooq.codegen.JavaGenerator
 import org.jooq.meta.jaxb.*
 import org.jooq.meta.jaxb.Target
+import java.io.File
 import java.io.IOException
 import java.net.URL
-import java.net.URLClassLoader
+import javax.xml.bind.JAXBContext
 
 @CacheableTask
 open class GenerateJooqClassesTask : DefaultTask() {
@@ -175,27 +175,56 @@ open class GenerateJooqClassesTask : DefaultTask() {
 
     private fun generateJooqClasses(jdbcAwareClassLoader: ClassLoader, dbHost: String) {
         project.delete(outputDirectory)
+        val config = prepareConfig(dbHost)
+        val configFile = writeConfigToTemporaryFile(config)
+        generateJooqClassesUsingClassloader(jdbcAwareClassLoader, configFile)
+    }
+
+    private fun prepareConfig(dbHost: String): Configuration {
         val db = getDb()
         val jdbc = getJdbc()
-        FlywaySchemaVersionProvider.setup(defaultFlywaySchema(), flywayTableName())
-        SchemaPackageRenameGeneratorStrategy.schemaToPackageMapping.set(schemaToPackageMapping.toMap())
         val generator = generatorConfig.get()
         excludeFlywaySchemaIfNeeded(generator)
-        val tool = GenerationTool()
-        tool.setClassLoader(jdbcAwareClassLoader)
-        tool.run(Configuration()
+        return Configuration()
                 .withLogging(Logging.DEBUG)
                 .withJdbc(Jdbc()
                         .withDriver(jdbc.driverClassName)
                         .withUrl(db.getUrl(dbHost))
                         .withUser(db.username)
                         .withPassword(db.password))
-                .withGenerator(generator))
+                .withGenerator(generator)
+    }
+
+    private fun writeConfigToTemporaryFile(config: Configuration): File {
+        val configFile = File(temporaryDir, "config.xml")
+        configFile.writer().use {
+            JAXBContext.newInstance(config.javaClass)
+                    .createMarshaller()
+                    .marshal(config, it)
+        }
+        if (logger.isDebugEnabled) {
+            logger.debug("config for generator: {}", configFile.readText())
+        }
+        return configFile
+    }
+
+    private fun generateJooqClassesUsingClassloader(jdbcAwareClassLoader: ClassLoader, configFile: File) {
+        jdbcAwareClassLoader.run {
+            loadClass(FlywaySchemaVersionProvider::class.qualifiedName)
+                    .getDeclaredMethod("setup", String::class.java, String::class.java)
+                    .invoke(null, defaultFlywaySchema(), flywayTableName())
+            loadClass(SchemaPackageRenameGeneratorStrategy::class.qualifiedName)
+                    .getDeclaredMethod("setup", Map::class.java)
+                    .invoke(null, schemaToPackageMapping.toMap())
+            loadClass("org.jooq.codegen.GenerationTool")
+                    .getDeclaredMethod("main", Array<String>::class.java)
+                    .invoke(null, arrayOf(configFile.absolutePath))
+        }
     }
 
     private fun prepareGeneratorConfig(): Generator {
         return Generator()
-                .withName(JavaGenerator::class.qualifiedName)
+                .withName("org.jooq.codegen.JavaGenerator")
                 .withStrategy(Strategy()
                         .withName(SchemaPackageRenameGeneratorStrategy::class.qualifiedName))
                 .withDatabase(Database()
@@ -229,7 +258,10 @@ open class GenerateJooqClassesTask : DefaultTask() {
     }
 
     private fun buildJdbcArtifactsAwareClassLoader(): ClassLoader {
-        return URLClassLoader(resolveJdbcArtifacts(), project.buildscript.classLoader)
+        return ChildFirstClassLoader(
+                resolveJdbcArtifacts()
+                        + arrayOf(SchemaPackageRenameGeneratorStrategy.javaClass.protectionDomain.codeSource.location),
+                project.buildscript.classLoader)
     }
 
     @Throws(IOException::class)

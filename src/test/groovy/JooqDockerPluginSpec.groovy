@@ -44,6 +44,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -53,6 +54,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -76,6 +78,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -91,6 +94,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
@@ -116,6 +120,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -132,6 +137,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
@@ -155,6 +161,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -173,6 +180,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
@@ -196,6 +204,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -205,6 +214,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -237,6 +247,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -246,6 +257,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -279,6 +291,7 @@ class JooqDockerPluginSpec extends Specification {
         def initialBuildGradle =
                 """
                 plugins {
+                    java
                     id("com.revolut.jooq-docker")
                 }
                 
@@ -294,11 +307,13 @@ class JooqDockerPluginSpec extends Specification {
                 
                 dependencies {
                     jdbc("org.postgresql:postgresql:42.2.5")
+                    implementation("org.jooq:jooq:3.14.8")
                 }
                 """
         def extensionUpdatedBuildGradle =
                 """
                 plugins {
+                    java
                     id("com.revolut.jooq-docker")
                 }
                 
@@ -314,6 +329,7 @@ class JooqDockerPluginSpec extends Specification {
                 
                 dependencies {
                     jdbc("org.postgresql:postgresql:42.2.5")
+                    implementation("org.jooq:jooq:3.14.8")
                 }
                 """
         prepareBuildGradleFile(initialBuildGradle)
@@ -348,6 +364,7 @@ class JooqDockerPluginSpec extends Specification {
         def initialBuildGradle =
                 """
                 plugins {
+                    java
                     id("com.revolut.jooq-docker")
                 }
                 
@@ -366,11 +383,13 @@ class JooqDockerPluginSpec extends Specification {
                 
                 dependencies {
                     jdbc("org.postgresql:postgresql:42.2.5")
+                    implementation("org.jooq:jooq:3.14.8")
                 }
                 """
         def updatedBuildGradle =
                 """
                 plugins {
+                    java
                     id("com.revolut.jooq-docker")
                 }
                 
@@ -389,6 +408,7 @@ class JooqDockerPluginSpec extends Specification {
                 
                 dependencies {
                     jdbc("org.postgresql:postgresql:42.2.5")
+                    implementation("org.jooq:jooq:3.14.8")
                 }
                 """
         copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
@@ -426,6 +446,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -441,6 +462,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -462,6 +484,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -499,6 +522,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("mysql:mysql-connector-java:8.0.15")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init_mysql.sql", "src/main/resources/db/migration/V01__init_mysql.sql")
@@ -520,6 +544,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -535,6 +560,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init_with_placeholders.sql", "src/main/resources/db/migration/V01__init_with_placeholders.sql")
@@ -556,6 +582,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -571,6 +598,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -594,6 +622,7 @@ class JooqDockerPluginSpec extends Specification {
         buildGradleFile.write(
                 """
                       plugins {
+                          id "java"
                           id "com.revolut.jooq-docker"
                       }
                       
@@ -612,6 +641,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc "org.postgresql:postgresql:42.2.5"
+                          implementation "org.jooq:jooq:3.14.8"
                       }
                       """)
         copyResource("/V01__init_with_placeholders.sql", "src/main/resources/db/migration/V01__init_with_placeholders.sql")
@@ -636,6 +666,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -651,6 +682,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -674,6 +706,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -689,6 +722,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -708,11 +742,11 @@ class JooqDockerPluginSpec extends Specification {
         Files.notExists(generatedFlywayClass)
     }
 
-
     def "exclude flyway schema history given custom Flyway table name"() {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -729,6 +763,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -748,11 +783,11 @@ class JooqDockerPluginSpec extends Specification {
         Files.notExists(generatedCustomFlywayClass)
     }
 
-
     def "exclude flyway schema history without overriding existing excludes"() {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -772,6 +807,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
@@ -797,6 +833,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -812,6 +849,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -928,6 +966,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       apply(plugin = "java")
@@ -1076,6 +1115,7 @@ class JooqDockerPluginSpec extends Specification {
         configureLocalGradleCache();
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -1085,6 +1125,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -1132,6 +1173,7 @@ class JooqDockerPluginSpec extends Specification {
                 import org.jooq.meta.jaxb.ForcedType
                 
                 plugins {
+                    java
                     id("com.revolut.jooq-docker")
                 }
                 
@@ -1152,6 +1194,7 @@ class JooqDockerPluginSpec extends Specification {
                 
                 dependencies {
                     jdbc("org.postgresql:postgresql:42.2.5")
+                    implementation("org.jooq:jooq:3.14.8")
                 }
                 """
         def updatedBuildFile =
@@ -1159,6 +1202,7 @@ class JooqDockerPluginSpec extends Specification {
                 import org.jooq.meta.jaxb.ForcedType
                 
                 plugins {
+                    java
                     id("com.revolut.jooq-docker")
                 }
                 
@@ -1179,6 +1223,7 @@ class JooqDockerPluginSpec extends Specification {
                 
                 dependencies {
                     jdbc("org.postgresql:postgresql:42.2.5")
+                    implementation("org.jooq:jooq:3.14.8")
                 }
                 """
         prepareBuildGradleFile(initialBuildGradle)
@@ -1218,6 +1263,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -1233,6 +1279,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
@@ -1258,6 +1305,7 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
+                          java
                           id("com.revolut.jooq-docker")
                       }
                       
@@ -1275,6 +1323,7 @@ class JooqDockerPluginSpec extends Specification {
                       
                       dependencies {
                           jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.8")
                       }
                       """)
         copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
@@ -1292,6 +1341,55 @@ class JooqDockerPluginSpec extends Specification {
         def generatedFlywayClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/FlywaySchemaHistory.java")
         Files.exists(generatedFooClass)
         Files.exists(generatedFlywayClass)
+    }
+
+    def "picks up jooq version from project dependencies"() {
+        given:
+        prepareBuildGradleFile("""
+                      plugins {
+                          java
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          mavenCentral()
+                      }
+                      
+                      dependencies {
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.13.6")
+                          implementation("javax.annotation:javax.annotation-api:1.3.2")
+                      }
+                      """)
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
+        writeProjectFile("src/main/java/com/test/Main.java",
+                """
+                package com.test;
+                
+                import static org.jooq.generated.Tables.FOO;
+                
+                public class Main {
+                    public static void main(String[] args) {
+                        System.out.println(FOO.ID.getName());
+                    }
+                }
+                """);
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .forwardOutput()
+                .withArguments("classes")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        result.task(":classes").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def mainClass = Paths.get(projectDir.getPath(), "build/classes/java/main/com/test/Main.class")
+        Files.exists(generatedFooClass)
+        Files.exists(mainClass)
     }
 
     def configureLocalGradleCache() {

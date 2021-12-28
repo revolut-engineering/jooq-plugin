@@ -9,6 +9,7 @@ class FlywaySchemaVersionProvider : SchemaVersionProvider {
         private val defaultSchemaName = ThreadLocal<String>()
         private val flywayTableName = ThreadLocal<String>()
 
+        @JvmStatic
         fun setup(defaultSchemaName: String, flywayTableName: String) {
             this.defaultSchemaName.set(defaultSchemaName)
             this.flywayTableName.set(flywayTableName)
