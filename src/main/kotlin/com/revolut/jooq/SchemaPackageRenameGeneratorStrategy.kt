@@ -7,12 +7,7 @@ import org.jooq.meta.SchemaDefinition
 
 class SchemaPackageRenameGeneratorStrategy : DefaultGeneratorStrategy() {
     companion object {
-        private val schemaToPackageMapping: ThreadLocal<Map<String, String>> = ThreadLocal.withInitial { emptyMap() }
-
-        @JvmStatic
-        fun setup(mapping: Map<String, String>) {
-            schemaToPackageMapping.set(mapping)
-        }
+        val schemaToPackageMapping: ThreadLocal<Map<String, String>> = ThreadLocal.withInitial { emptyMap() }
     }
 
     override fun getJavaIdentifier(definition: Definition?): String {
