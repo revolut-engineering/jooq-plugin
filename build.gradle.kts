@@ -29,7 +29,7 @@ java {
 }
 
 group = "com.revolut.jooq"
-version = "0.3.7"
+version = "0.3.8"
 
 gradlePlugin {
     plugins.create("jooqDockerPlugin") {
@@ -111,7 +111,7 @@ afterEvaluate {
 
 
 dependencies {
-    implementation("org.jooq:jooq-codegen:3.14.8")
+    implementation("org.jooq:jooq-codegen:3.14.15")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.3")
     implementation("com.github.docker-java:docker-java-transport-okhttp:3.2.8")
     implementation("org.flywaydb:flyway-core:6.4.3")
