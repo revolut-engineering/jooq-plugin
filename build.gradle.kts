@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
+import java.net.URI
 
 plugins {
     `kotlin-dsl`
@@ -29,7 +30,7 @@ java {
 }
 
 group = "com.revolut.jooq"
-version = "0.3.8"
+version = "0.3.9-SNAPSHOT"
 
 gradlePlugin {
     plugins.create("jooqDockerPlugin") {
@@ -50,6 +51,16 @@ pluginBundle {
             displayName = "jOOQ Docker Plugin"
             tags = listOf("jooq", "docker", "db")
             version = project.version.toString()
+        }
+    }
+}
+
+publishing {
+    repositories {
+        val snapshotRepository by extra { project.findProperty("snapshotRepository")?.toString() ?: "" }
+        val releaseRepository by extra { project.findProperty("releaseRepository")?.toString() ?: "" }
+        maven {
+            url = URI(if (project.version.toString().endsWith("-SNAPSHOT")) snapshotRepository else releaseRepository)
         }
     }
 }
@@ -82,8 +93,8 @@ tasks {
             componentSelection {
                 all {
                     val rejected = listOf("alpha", "beta", "b", "rc", "cr", "m", "preview")
-                            .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]?.*") }
-                            .any { it.matches(candidate.version) }
+                        .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]?.*") }
+                        .any { it.matches(candidate.version) }
                     if (rejected) {
                         reject("Release candidate")
                     }
