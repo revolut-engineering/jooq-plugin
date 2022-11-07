@@ -19,7 +19,9 @@ class JooqDockerPluginSpec extends Specification {
 
     def setup() {
         projectDir = temporaryFolder.newFolder()
-        copyResource("testkit-gradle.properties", "gradle.properties")
+        if (getClass().getResourceAsStream("testkit-gradle.properties")) {
+            copyResource("testkit-gradle.properties", "gradle.properties")
+        }
     }
 
     def "plugin is applicable"() {

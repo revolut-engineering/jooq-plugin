@@ -8,11 +8,13 @@ import java.net.URI
 plugins {
     `kotlin-dsl`
     groovy
-    jacoco
     `maven-publish`
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "0.14.0"
-    id("pl.droidsonroids.jacoco.testkit") version "1.0.8"
+    if (System.getenv().containsKey("TRAVIS") || !System.getenv().containsKey("CI")) {
+        jacoco
+        id("pl.droidsonroids.jacoco.testkit") version "1.0.8"
+    }
     id("com.github.ben-manes.versions").version("0.38.0")
 }
 
@@ -80,7 +82,7 @@ tasks {
         }
     }
 
-    jacocoTestReport {
+    withType<JacocoReport> {
         reports {
             xml.isEnabled = true
             html.isEnabled = false
@@ -111,7 +113,7 @@ tasks {
 }
 
 afterEvaluate {
-    tasks.jacocoTestReport {
+    tasks.withType<JacocoReport> {
         classDirectories.setFrom(classDirectories.files.map {
             fileTree(it) {
                 exclude("com/revolut/shaded/org/testcontainers/**/*")
