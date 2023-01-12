@@ -11,10 +11,12 @@ import com.github.dockerjava.core.DockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
 import com.github.dockerjava.core.command.ExecStartResultCallback
 import com.github.dockerjava.okhttp.OkHttpDockerCmdExecFactory
+import com.revolut.jooq.WaitForPortStrategy.Companion.wait
 import org.gradle.api.Action
 import com.revolut.shaded.org.testcontainers.dockerclient.auth.AuthDelegatingDockerClientConfig
 import java.io.Closeable
 import java.lang.System.*
+import java.time.Duration
 import java.util.UUID.randomUUID
 
 class Docker(private val imageName: String,
@@ -34,17 +36,17 @@ class Docker(private val imageName: String,
         try {
             val dbHost = resolveDbHost()
             removeContainer()
-            prepareDockerizedDb()
+            prepareDockerizedDb(dbHost)
             action.execute(dbHost)
         } finally {
             removeContainer()
         }
     }
 
-    private fun prepareDockerizedDb() {
+    private fun prepareDockerizedDb(dbHost: String) {
         pullImage()
         startContainer()
-        awaitContainerStart()
+        awaitContainerStart(dbHost)
     }
 
     private fun pullImage() {
@@ -64,7 +66,7 @@ class Docker(private val imageName: String,
         docker.startContainerCmd(containerName).exec()
     }
 
-    private fun awaitContainerStart() {
+    private fun awaitContainerStart(dbHost: String) {
         val execCreate = docker.execCreateCmd(containerName)
                 .withCmd(*readinessCommand)
                 .withAttachStdout(true)
@@ -72,6 +74,7 @@ class Docker(private val imageName: String,
         docker.execStartCmd(execCreate.id)
                 .exec(ExecStartResultCallback(out, err))
                 .awaitCompletion()
+        wait(dbHost, portBinding.second, Duration.ofSeconds(20))
     }
 
     private fun resolveDbHost(): String {
