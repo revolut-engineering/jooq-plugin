@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException
 
 class WaitForPortStrategy {
     companion object {
+        @JvmStatic
         fun wait(dbHost: String, port: Int, timeout: Duration) {
             val start = Instant.now()
             while (!isPortAvailable(dbHost, port)) {
