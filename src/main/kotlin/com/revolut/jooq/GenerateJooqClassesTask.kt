@@ -88,6 +88,9 @@ open class GenerateJooqClassesTask : DefaultTask() {
     fun getImageRepository() = getImage().repository
 
     @Input
+    fun getPlatform() = getImage().platform
+
+    @Input
     fun getImageTag() = getImage().tag
 
     @Input
@@ -143,6 +146,7 @@ open class GenerateJooqClassesTask : DefaultTask() {
         val jdbcAwareClassLoader = buildJdbcArtifactsAwareClassLoader()
         val docker = Docker(
                 image.getImageName(),
+                image.platform,
                 image.envVars,
                 db.port to db.exposedPort,
                 image.getReadinessCommand(),
