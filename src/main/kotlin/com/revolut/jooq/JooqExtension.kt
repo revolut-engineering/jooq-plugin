@@ -52,6 +52,7 @@ open class JooqExtension(projectName: String) : Serializable {
         var tag = "14.5-alpine"
         var envVars: Map<String, Any> = mapOf("POSTGRES_USER" to db.username, "POSTGRES_PASSWORD" to db.password, "POSTGRES_DB" to db.name)
         var containerName = "jooq-docker-container-${projectName}"
+        var platform = ""
         var readinessProbeHost = "127.0.0.1"
         var readinessProbe = { host: String, port: Int ->
             arrayOf("sh", "-c", "until pg_isready -h $host -p $port; do echo waiting for db; sleep 1; done;")

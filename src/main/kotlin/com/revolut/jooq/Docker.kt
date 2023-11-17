@@ -20,6 +20,7 @@ import java.time.Duration
 import java.util.UUID.randomUUID
 
 class Docker(private val imageName: String,
+             private val platform: String,
              private val env: Map<String, Any>,
              private val portBinding: Pair<Int, Int>,
              private val readinessCommand: Array<String>,
@@ -58,6 +59,7 @@ class Docker(private val imageName: String,
     private fun startContainer() {
         val dbPort = ExposedPort.tcp(portBinding.first)
         docker.createContainerCmd(imageName)
+                .withPlatform(platform)
                 .withName(containerName)
                 .withEnv(env.map { "${it.key}=${it.value}" })
                 .withExposedPorts(dbPort)
