@@ -474,7 +474,7 @@ class JooqDockerPluginSpec extends Specification {
                       jooq {
                           image {
                               repository = "mysql"
-                              tag = "8.0.15"
+                              tag = "8.3.0"
                               envVars = mapOf(
                                   "MYSQL_ROOT_PASSWORD" to "mysql",
                                   "MYSQL_DATABASE" to "mysql")
