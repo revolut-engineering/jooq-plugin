@@ -19,12 +19,15 @@ import java.lang.System.*
 import java.time.Duration
 import java.util.UUID.randomUUID
 
-class Docker(private val imageName: String,
-             private val env: Map<String, Any>,
-             private val portBinding: Pair<Int, Int>,
-             private val readinessCommand: Array<String>,
-             private val databaseHostResolver: DatabaseHostResolver,
-             private val containerName: String = randomUUID().toString()) : Closeable {
+class Docker(
+    private val imageName: String,
+    private val env: Map<String, Any>,
+    private val portBinding: Pair<Int, Int>,
+    private val readinessCommand: Array<String>,
+    private val databaseHostResolver: DatabaseHostResolver,
+    private val containerName: String = randomUUID().toString(),
+    private val offline: Boolean
+) : Closeable {
     // https://github.com/docker-java/docker-java/issues/1048
     private val config: DockerClientConfig = AuthDelegatingDockerClientConfig(DefaultDockerClientConfig
             .createDefaultConfigBuilder()
@@ -50,9 +53,11 @@ class Docker(private val imageName: String,
     }
 
     private fun pullImage() {
-        val callback = PullImageResultCallback()
-        docker.pullImageCmd(imageName).exec(callback)
-        callback.awaitCompletion()
+        if (!offline || !docker.listImagesCmd().withReferenceFilter(imageName).exec().any()) {
+            val callback = PullImageResultCallback()
+            docker.pullImageCmd(imageName).exec(callback)
+            callback.awaitCompletion()
+        }
     }
 
     private fun startContainer() {

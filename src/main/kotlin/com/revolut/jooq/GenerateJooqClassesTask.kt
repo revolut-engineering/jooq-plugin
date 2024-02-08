@@ -142,12 +142,13 @@ open class GenerateJooqClassesTask : DefaultTask() {
         val db = getDb()
         val jdbcAwareClassLoader = buildJdbcArtifactsAwareClassLoader()
         val docker = Docker(
-                image.getImageName(),
-                image.envVars,
-                db.port to db.exposedPort,
-                image.getReadinessCommand(),
-                DatabaseHostResolver(db.hostOverride),
-                image.containerName)
+            image.getImageName(),
+            image.envVars,
+            db.port to db.exposedPort,
+            image.getReadinessCommand(),
+            DatabaseHostResolver(db.hostOverride),
+            image.containerName,
+            project.gradle.startParameter.isOffline)
         docker.use {
             it.runInContainer {
                 migrateDb(jdbcAwareClassLoader, this)
