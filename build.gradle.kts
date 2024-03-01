@@ -6,53 +6,40 @@ import org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
 import java.net.URI
 
 plugins {
-    `kotlin-dsl`
+    `java-gradle-plugin`
+    `java-library`
+    `java-test-fixtures`
     groovy
+    `kotlin-dsl`
     `maven-publish`
-    id("java-gradle-plugin")
-    id("com.gradle.plugin-publish") version "0.14.0"
-    if (System.getenv().containsKey("TRAVIS") || !System.getenv().containsKey("CI")) {
-        jacoco
-        id("pl.droidsonroids.jacoco.testkit") version "1.0.8"
-    }
-    id("com.github.ben-manes.versions").version("0.38.0")
+    id("com.github.ben-manes.versions").version("0.51.0")
+    id("com.gradle.plugin-publish").version("1.2.1")
 }
 
 repositories {
     mavenCentral()
 }
 
-kotlinDslPluginOptions {
-    experimentalWarning.set(false)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
+/*java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}*/
 
 group = "com.revolut.jooq"
-version = "0.3.10"
+version = "0.3.11"
 
 gradlePlugin {
-    plugins.create("jooqDockerPlugin") {
-        id = "com.revolut.jooq-docker"
-        implementationClass = "com.revolut.jooq.JooqDockerPlugin"
-        version = project.version
-    }
-}
+    website.set("https://github.com/revolut-engineering/jooq-plugin")
+    vcsUrl.set("https://github.com/revolut-engineering/jooq-plugin")
 
-pluginBundle {
-    website = "https://github.com/revolut-engineering/jooq-plugin"
-    vcsUrl = "https://github.com/revolut-engineering/jooq-plugin"
-
-    description = "Generates jOOQ classes using dockerized database"
-
-    (plugins) {
-        "jooqDockerPlugin" {
+    plugins {
+        register("jooqDockerPlugin") {
+            id = "com.revolut.jooq-docker"
+            implementationClass = "com.revolut.jooq.JooqDockerPlugin"
+            description = "Generates jOOQ classes using dockerized database"
             displayName = "jOOQ Docker Plugin"
-            tags = listOf("jooq", "docker", "db")
-            version = project.version.toString()
+            tags = setOf("jooq", "docker", "db")
+            version = project.version
         }
     }
 }
@@ -69,6 +56,7 @@ publishing {
 
 tasks {
     withType<Test>().configureEach {
+        useJUnitPlatform()
         if (JavaVersion.current().isJava9Compatible) {
             jvmArgs("--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED")
             jvmArgs("--illegal-access=deny")
@@ -82,13 +70,7 @@ tasks {
         }
     }
 
-    withType<JacocoReport> {
-        reports {
-            xml.isEnabled = true
-            html.isEnabled = false
-        }
-        setDependsOn(withType<Test>())
-    }
+    // FIXME restore Jacoco
 
     dependencyUpdates {
         resolutionStrategy {
@@ -107,7 +89,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.7"
+        gradleVersion = "8.6"
         distributionType = ALL
     }
 }
@@ -122,7 +104,6 @@ afterEvaluate {
     }
 }
 
-
 dependencies {
     implementation("org.jooq:jooq-codegen:3.14.15")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.3")
@@ -131,6 +112,6 @@ dependencies {
     implementation("org.zeroturnaround:zt-exec:1.12")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
 
-    testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
+    testImplementation("org.spockframework:spock-core:2.3-groovy-3.0")
     testCompileOnly(gradleTestKit())
 }

@@ -1,7 +1,7 @@
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
+import spock.util.io.FileSystemFixture
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -12,13 +12,12 @@ import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE
 
 class JooqDockerPluginSpec extends Specification {
 
-    @Rule
-    TemporaryFolder temporaryFolder = new TemporaryFolder()
-
+    @TempDir
+    FileSystemFixture fileSystem
     File projectDir
 
     def setup() {
-        projectDir = temporaryFolder.newFolder()
+        projectDir = fileSystem.dir("project").toFile()
         if (getClass().getResourceAsStream("testkit-gradle.properties")) {
             copyResource("testkit-gradle.properties", "gradle.properties")
         }
@@ -1297,7 +1296,7 @@ class JooqDockerPluginSpec extends Specification {
     }
 
     def configureLocalGradleCache() {
-        File localBuildCacheDirectory = temporaryFolder.newFolder();
+        File localBuildCacheDirectory = fileSystem.dir("cache").toFile()
         def settingsGradleFile = new File(projectDir, "settings.gradle.kts")
         settingsGradleFile.write("""
                         buildCache {
