@@ -19,10 +19,10 @@ repositories {
     mavenCentral()
 }
 
-/*java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}*/
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
 group = "com.revolut.jooq"
 version = "0.3.11"
