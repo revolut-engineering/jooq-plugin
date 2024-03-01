@@ -884,8 +884,8 @@ class JooqDockerPluginSpec extends Specification {
         given:
         prepareBuildGradleFile("""
                       plugins {
-                          kotlin("jvm").version("1.3.50")
                           id("com.revolut.jooq-docker")
+                          kotlin("jvm").version("1.9.22")
                       }
                       
                       repositories {
@@ -1032,8 +1032,8 @@ class JooqDockerPluginSpec extends Specification {
                       
                       plugins {
                           id("com.revolut.jooq-docker")
+                          kotlin("jvm").version("1.9.22")
                       }
-                      apply(plugin = "org.jetbrains.kotlin.jvm")
                       
                       repositories {
                           mavenCentral()
