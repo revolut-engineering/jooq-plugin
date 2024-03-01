@@ -6,14 +6,10 @@ import org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
 import java.net.URI
 
 plugins {
-    `java-gradle-plugin`
-    `java-library`
-    `java-test-fixtures`
     groovy
     `kotlin-dsl`
-    `maven-publish`
-    id("com.github.ben-manes.versions").version("0.51.0")
     id("com.gradle.plugin-publish").version("1.2.1")
+    id("com.github.ben-manes.versions").version("0.51.0")
 }
 
 repositories {
