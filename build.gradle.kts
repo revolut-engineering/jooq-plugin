@@ -10,6 +10,9 @@ plugins {
     `kotlin-dsl`
     id("com.gradle.plugin-publish").version("1.2.1")
     id("com.github.ben-manes.versions").version("0.51.0")
+    if (System.getenv().containsKey("TRAVIS") || !System.getenv().containsKey("CI")) {
+        id("pl.droidsonroids.jacoco.testkit").version("1.0.12")
+    }
 }
 
 repositories {
@@ -66,7 +69,13 @@ tasks {
         }
     }
 
-    // FIXME restore Jacoco
+    withType<JacocoReport> {
+        reports {
+            xml.required = true
+            html.required = false
+        }
+        setDependsOn(withType<Test>())
+    }
 
     dependencyUpdates {
         resolutionStrategy {
