@@ -5,7 +5,7 @@ services:
   - docker
 
 jdk:
-  - oraclejdk11
+  - oraclejdk17
 
 script:
   - ./gradlew build jacocoTestReport --scan -s
