@@ -1,4 +1,5 @@
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel.CURRENT
+import com.gradle.publish.PublishTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
@@ -43,13 +44,12 @@ gradlePlugin {
     }
 }
 
+val isSnapshot = project.version.toString().endsWith("-SNAPSHOT")
+
 publishing {
     repositories {
         val snapshotRepository by extra { project.findProperty("snapshotRepository")?.toString() ?: "" }
-        val releaseRepository by extra { project.findProperty("releaseRepository")?.toString() ?: "" }
-        maven {
-            url = URI(if (project.version.toString().endsWith("-SNAPSHOT")) snapshotRepository else releaseRepository)
-        }
+        maven { url = URI(if (isSnapshot) snapshotRepository else "") }
     }
 }
 
@@ -75,6 +75,15 @@ tasks {
             html.required = false
         }
         setDependsOn(withType<Test>())
+    }
+
+    withType<PublishToMavenRepository>().configureEach {
+        onlyIf("publishing SNAPSHOT release to the internal repository") { isSnapshot }
+        setFinalizedBy(withType<PublishTask>())
+    }
+
+    withType<PublishTask>().configureEach {
+        onlyIf("publishing release to the Gradle Plugin Portal") { !isSnapshot }
     }
 
     dependencyUpdates {
