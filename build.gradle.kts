@@ -26,7 +26,7 @@ java {
 }
 
 group = "com.revolut.jooq"
-version = "0.3.12-SNAPSHOT"
+version = "0.3.12"
 
 gradlePlugin {
     website.set("https://github.com/revolut-engineering/jooq-plugin")
