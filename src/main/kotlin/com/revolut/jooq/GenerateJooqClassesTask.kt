@@ -9,6 +9,7 @@ import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.SourceSet.MAIN_SOURCE_SET_NAME
 import org.jooq.codegen.GenerationTool
@@ -109,13 +110,28 @@ open class GenerateJooqClassesTask : DefaultTask() {
 
     init {
         project.plugins.withType(JavaPlugin::class.java) {
-            project.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.named(MAIN_SOURCE_SET_NAME) {
-                java {
-                    srcDir(outputDirectory)
+            // Use modern API for Gradle 8.0+, fallback to deprecated API for older versions
+            val gradleVersion = project.gradle.gradleVersion
+            val majorVersion = gradleVersion.split('.')[0].toIntOrNull() ?: 0
+            val isModernGradle = majorVersion >= 8
+            
+            if (isModernGradle) {
+                project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.named(MAIN_SOURCE_SET_NAME) {
+                    java {
+                        srcDir(outputDirectory)
+                    }
+                }
+            } else {
+                // Fallback to deprecated API for backwards compatibility
+                project.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.named(MAIN_SOURCE_SET_NAME) {
+                    java {
+                        srcDir(outputDirectory)
+                    }
                 }
             }
         }
     }
+
 
     private fun getExtension() = project.extensions.getByName("jooq") as JooqExtension
 
