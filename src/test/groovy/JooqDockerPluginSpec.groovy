@@ -1295,6 +1295,104 @@ class JooqDockerPluginSpec extends Specification {
         Files.exists(generatedFlywayClass)
     }
 
+    def "gradle version compatibility - modern API used for Gradle 8+"() {
+        given:
+        prepareBuildGradleFile("""
+                      plugins {
+                          java
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          mavenCentral()
+                      }
+                      
+                      dependencies {
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.15")
+                          implementation("javax.annotation:javax.annotation-api:1.3.2")
+                      }
+                      """)
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
+        writeProjectFile("src/main/java/com/test/Main.java",
+                """
+                package com.test;
+                
+                import static org.jooq.generated.Tables.FOO;
+                
+                public class Main {
+                    public static void main(String[] args) {
+                        System.out.println(FOO.ID.getName());
+                    }
+                }
+                """);
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withGradleVersion("8.14.3")
+                .withArguments("compileJava")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        result.task(":compileJava").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def mainClass = Paths.get(projectDir.getPath(), "build/classes/java/main/com/test/Main.class")
+        Files.exists(generatedFooClass)
+        Files.exists(mainClass)
+    }
+
+    def "gradle version compatibility - legacy API used for Gradle 7.x"() {
+        given:
+        prepareBuildGradleFile("""
+                      plugins {
+                          java
+                          id("com.revolut.jooq-docker")
+                      }
+                      
+                      repositories {
+                          mavenCentral()
+                      }
+                      
+                      dependencies {
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.15")
+                          implementation("javax.annotation:javax.annotation-api:1.3.2")
+                      }
+                      """)
+        copyResource("/V01__init.sql", "src/main/resources/db/migration/V01__init.sql")
+        writeProjectFile("src/main/java/com/test/Main.java",
+                """
+                package com.test;
+                
+                import static org.jooq.generated.Tables.FOO;
+                
+                public class Main {
+                    public static void main(String[] args) {
+                        System.out.println(FOO.ID.getName());
+                    }
+                }
+                """);
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withGradleVersion("7.6.4")
+                .withArguments("compileJava")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        result.task(":compileJava").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq/org/jooq/generated/tables/Foo.java")
+        def mainClass = Paths.get(projectDir.getPath(), "build/classes/java/main/com/test/Main.class")
+        Files.exists(generatedFooClass)
+        Files.exists(mainClass)
+    }
+
     def configureLocalGradleCache() {
         File localBuildCacheDirectory = fileSystem.dir("cache").toFile()
         def settingsGradleFile = new File(projectDir, "settings.gradle.kts")
