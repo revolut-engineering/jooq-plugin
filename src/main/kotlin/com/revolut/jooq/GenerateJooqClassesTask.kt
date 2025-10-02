@@ -8,7 +8,7 @@ import org.flywaydb.core.internal.configuration.ConfigUtils.TABLE
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.SourceSet.MAIN_SOURCE_SET_NAME
 import org.jooq.codegen.GenerationTool
@@ -109,11 +109,13 @@ open class GenerateJooqClassesTask : DefaultTask() {
 
     init {
         project.plugins.withType(JavaPlugin::class.java) {
-            project.convention.getPlugin(JavaPluginConvention::class.java).sourceSets.named(MAIN_SOURCE_SET_NAME) {
-                java {
-                    srcDir(outputDirectory)
+            project.extensions.configure(JavaPluginExtension::class.java, {
+                sourceSets.named(MAIN_SOURCE_SET_NAME) {
+                    java {
+                        srcDir(outputDirectory)
+                    }
                 }
-            }
+            })
         }
     }
 
