@@ -3,6 +3,7 @@ package com.revolut.jooq
 import org.gradle.api.JavaVersion
 import org.gradle.api.JavaVersion.VERSION_22
 import org.gradle.api.JavaVersion.VERSION_24
+import org.gradle.api.JavaVersion.VERSION_25
 import org.gradle.util.GradleVersion
 import org.junit.jupiter.api.TestTemplate
 import org.junit.jupiter.api.extension.ExtendWith
@@ -64,7 +65,12 @@ annotation class GradleMatrixTest(
         ),
         GradleVersionConfiguration(
             "9.1.0",
-            maxSupportedJavaVersion = VERSION_24,  // replace with VERSION_25 once the CI is ready.
+            maxSupportedJavaVersion = VERSION_25,
+            supportsConfigurationCache = true,
+        ),
+        GradleVersionConfiguration(
+            "9.3.1",
+            maxSupportedJavaVersion = VERSION_25,
             supportsConfigurationCache = true,
         ),
     ],

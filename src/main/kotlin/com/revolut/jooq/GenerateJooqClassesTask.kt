@@ -7,10 +7,7 @@ import org.flywaydb.core.internal.configuration.ConfigUtils.DEFAULT_SCHEMA
 import org.flywaydb.core.internal.configuration.ConfigUtils.TABLE
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
-import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.*
-import org.gradle.api.tasks.SourceSet.MAIN_SOURCE_SET_NAME
 import org.jooq.codegen.GenerationTool
 import org.jooq.codegen.JavaGenerator
 import org.jooq.meta.jaxb.*
@@ -105,18 +102,6 @@ open class GenerateJooqClassesTask : DefaultTask() {
     @Input
     fun getCleanedGeneratorConfig() = generatorConfig.get().apply {
         target.withDirectory("ignored")
-    }
-
-    init {
-        project.plugins.withType(JavaPlugin::class.java) {
-            project.extensions.configure(JavaPluginExtension::class.java, {
-                sourceSets.named(MAIN_SOURCE_SET_NAME) {
-                    java {
-                        srcDir(outputDirectory)
-                    }
-                }
-            })
-        }
     }
 
     private fun getExtension() = project.extensions.getByName("jooq") as JooqExtension

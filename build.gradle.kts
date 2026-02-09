@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "com.revolut.jooq"
-version = "0.3.13-SNAPSHOT"
+version = "0.3.13"
 
 repositories {
     mavenCentral()
@@ -59,7 +59,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "9.1.0"
+        gradleVersion = "9.3.1"
         distributionType = ALL
     }
 }
@@ -123,11 +123,11 @@ testing {
                     shouldRunAfter(test)
                 }
             }
-            targets.register("${name}OnJava21") {
+            targets.register("${name}OnJava25") {
                 testTask.configure {
                     javaLauncher.set(
                         javaToolchains.launcherFor {
-                            languageVersion.set(JavaLanguageVersion.of(21))
+                            languageVersion.set(JavaLanguageVersion.of(25))
                             vendor.set(java.toolchain.vendor)
                         },
                     )
