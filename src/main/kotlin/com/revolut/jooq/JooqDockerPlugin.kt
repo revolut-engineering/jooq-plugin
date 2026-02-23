@@ -18,34 +18,40 @@ open class JooqDockerPlugin : Plugin<Project> {
             group = "jooq"
         }
 
+        val allJooqTasks = project.tasks.withType(GenerateJooqClassesTask::class.java)
+
         // Make jdbc configuration inherit versions from implementation when Java plugin is applied
         project.plugins.withType(JavaPlugin::class.java) {
             project.configurations.findByName("implementation")?.let { implementation ->
                 jdbcConfiguration.extendsFrom(implementation)
             }
 
-            project.extensions.configure(JavaPluginExtension::class.java) {
-                sourceSets.named(MAIN_SOURCE_SET_NAME) {
-                    java {
-                        srcDir(generateJooqTask.flatMap { it.outputDirectory })
+            allJooqTasks.configureEach {
+                project.extensions.configure(JavaPluginExtension::class.java) {
+                    sourceSets.named(MAIN_SOURCE_SET_NAME) {
+                        java {
+                            srcDir(this@configureEach.outputDirectory)
+                        }
                     }
                 }
             }
             project.tasks.named("compileJava") {
-                dependsOn(generateJooqTask)
+                dependsOn(allJooqTasks)
             }
         }
 
         project.plugins.withId("org.jetbrains.kotlin.jvm") {
-            project.extensions.configure(JavaPluginExtension::class.java) {
-                sourceSets.named(MAIN_SOURCE_SET_NAME) {
-                    java {
-                        srcDir(generateJooqTask.flatMap { it.outputDirectory })
+            allJooqTasks.configureEach {
+                project.extensions.configure(JavaPluginExtension::class.java) {
+                    sourceSets.named(MAIN_SOURCE_SET_NAME) {
+                        java {
+                            srcDir(this@configureEach.outputDirectory)
+                        }
                     }
                 }
             }
             project.tasks.named("compileKotlin") {
-                dependsOn(generateJooqTask)
+                dependsOn(allJooqTasks)
             }
         }
     }

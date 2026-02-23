@@ -1072,6 +1072,141 @@ class JooqDockerPluginSpec extends Specification {
         Files.exists(mainClass)
     }
 
+    def "additional GenerateJooqClassesTask instances are registered as source dirs and compile dependencies in java project"() {
+        given:
+        prepareBuildGradleFile("""
+                      import com.revolut.jooq.GenerateJooqClassesTask
+
+                      plugins {
+                          java
+                          id("com.revolut.jooq-docker")
+                      }
+
+                      repositories {
+                          mavenCentral()
+                      }
+
+                      tasks {
+                          generateJooqClasses {
+                              schemas = arrayOf("public")
+                              basePackageName = "com.example.public_schema"
+                              outputDirectory.set(project.layout.buildDirectory.dir("generated-jooq-public"))
+                          }
+                          register<GenerateJooqClassesTask>("generateOtherJooqClasses") {
+                              schemas = arrayOf("other")
+                              basePackageName = "com.example.other_schema"
+                              outputDirectory.set(project.layout.buildDirectory.dir("generated-jooq-other"))
+                          }
+                      }
+
+                      dependencies {
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.15")
+                          implementation("javax.annotation:javax.annotation-api:1.3.2")
+                      }
+                      """)
+        copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
+        writeProjectFile("src/main/java/com/test/Main.java",
+                """
+                package com.test;
+
+                import static com.example.public_schema.Tables.FOO;
+                import static com.example.other_schema.Tables.BAR;
+
+                public class Main {
+                    public static void main(String[] args) {
+                        System.out.println(FOO.ID.getName());
+                        System.out.println(BAR.ID.getName());
+                    }
+                }
+                """);
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("classes")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        result.task(":generateOtherJooqClasses").outcome == SUCCESS
+        result.task(":classes").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq-public/com/example/public_schema/tables/Foo.java")
+        def generatedBarClass = Paths.get(projectDir.getPath(), "build/generated-jooq-other/com/example/other_schema/tables/Bar.java")
+        def mainClass = Paths.get(projectDir.getPath(), "build/classes/java/main/com/test/Main.class")
+        Files.exists(generatedFooClass)
+        Files.exists(generatedBarClass)
+        Files.exists(mainClass)
+    }
+
+    def "additional GenerateJooqClassesTask instances are registered as source dirs and compile dependencies in kotlin project"() {
+        given:
+        prepareBuildGradleFile("""
+                      import com.revolut.jooq.GenerateJooqClassesTask
+
+                      plugins {
+                          id("com.revolut.jooq-docker")
+                          kotlin("jvm").version("1.9.22")
+                      }
+
+                      repositories {
+                          mavenCentral()
+                      }
+
+                      tasks {
+                          generateJooqClasses {
+                              schemas = arrayOf("public")
+                              basePackageName = "com.example.public_schema"
+                              outputDirectory.set(project.layout.buildDirectory.dir("generated-jooq-public"))
+                          }
+                          register<GenerateJooqClassesTask>("generateOtherJooqClasses") {
+                              schemas = arrayOf("other")
+                              basePackageName = "com.example.other_schema"
+                              outputDirectory.set(project.layout.buildDirectory.dir("generated-jooq-other"))
+                          }
+                      }
+
+                      dependencies {
+                          implementation(kotlin("stdlib"))
+                          jdbc("org.postgresql:postgresql:42.2.5")
+                          implementation("org.jooq:jooq:3.14.15")
+                          implementation("javax.annotation:javax.annotation-api:1.3.2")
+                      }
+                      """)
+        copyResource("/V01__init_multiple_schemas.sql", "src/main/resources/db/migration/V01__init_multiple_schemas.sql")
+        writeProjectFile("src/main/kotlin/com/test/Main.kt",
+                """
+                package com.test
+
+                import com.example.public_schema.Tables.FOO
+                import com.example.other_schema.Tables.BAR
+
+                fun main() {
+                    println(FOO.ID.name)
+                    println(BAR.ID.name)
+                }
+                """);
+
+        when:
+        def result = GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("classes")
+                .build()
+
+        then:
+        result.task(":generateJooqClasses").outcome == SUCCESS
+        result.task(":generateOtherJooqClasses").outcome == SUCCESS
+        result.task(":classes").outcome == SUCCESS
+        def generatedFooClass = Paths.get(projectDir.getPath(), "build/generated-jooq-public/com/example/public_schema/tables/Foo.java")
+        def generatedBarClass = Paths.get(projectDir.getPath(), "build/generated-jooq-other/com/example/other_schema/tables/Bar.java")
+        def mainClass = Paths.get(projectDir.getPath(), "build/classes/kotlin/main/com/test/MainKt.class")
+        Files.exists(generatedFooClass)
+        Files.exists(generatedBarClass)
+        Files.exists(mainClass)
+    }
+
     def "generateJooqClasses task output is loaded from cache"() {
         given:
         configureLocalGradleCache();
